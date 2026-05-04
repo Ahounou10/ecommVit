@@ -20,12 +20,12 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const [filters, setFilters] = useState<FilterState>({
-    search: '',
-    category: null,
-    subcategory: null,
-    priceRange: [0, 500000],
-    sizes: [],
-  });
+  search: '',
+  category: null,
+  subcategory: null,
+  priceRange: [0, 500000] as [number, number],
+  sizes: [],
+});
 
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
     const updated = { ...filters, ...newFilters };
