@@ -23,7 +23,13 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        sans: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
+          'Roboto',
+          'sans-serif',
+        ],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in',
@@ -41,9 +47,6 @@ const config: Config = {
       },
     },
   },
-    safelist: [
-      { pattern: /^(bg|text|border|fill|col|grid|aspect|translate|animate|rounded|px|py|w|h|min-h)-/ },
-    ],
   plugins: [],
 };
 
