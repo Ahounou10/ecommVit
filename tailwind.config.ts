@@ -41,6 +41,9 @@ const config: Config = {
       },
     },
   },
+    safelist: [
+      { pattern: /^(bg|text|border|fill|col|grid|aspect|translate|animate|rounded|px|py|w|h|min-h)-/ },
+    ],
   plugins: [],
 };
 
