@@ -1,18 +1,36 @@
-import { type NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/supabase/server';
+import { NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import type { NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith('/admin/dashboard') ||
-      request.nextUrl.pathname.startsWith('/admin/products')) {
-    const supabase = await createClient();
-    const { data: { session } } = await supabase.auth.getSession();
+  let response = NextResponse.next();
 
-    if (!session) {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll() {
+          // middleware = read only
+        },
+      },
     }
+  );
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
+
+  if (isAdminRoute && !user) {
+    return NextResponse.redirect(new URL('/admin/login', request.url));
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
