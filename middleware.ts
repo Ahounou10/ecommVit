@@ -2,20 +2,16 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import type { NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-  let response = NextResponse.next();
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next();
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll() {
-          // middleware = read only
-        },
+        getAll: () => req.cookies.getAll(),
+        setAll: () => {},
       },
     }
   );
@@ -24,13 +20,16 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
+  const isAdminRoute = req.nextUrl.pathname.startsWith('/admin');
 
-  if (isAdminRoute && !user) {
-    return NextResponse.redirect(new URL('/admin/login', request.url));
+  const isLoginPage = req.nextUrl.pathname === '/admin/login';
+
+  // 🔒 protection admin seulement
+  if (isAdminRoute && !isLoginPage && !user) {
+    return NextResponse.redirect(new URL('/admin/login', req.url));
   }
 
-  return response;
+  return res;
 }
 
 export const config = {
