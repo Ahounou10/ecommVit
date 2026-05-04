@@ -2,11 +2,21 @@
 
 import Link from 'next/link';
 import { ShoppingBag, Search, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const searchInput = useRef<HTMLInputElement | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isSearchOpen) {
+      setTimeout(() => searchInput.current?.focus(), 50);
+    }
+  }, [isSearchOpen]);
 
   const navLinks = [
     { href: '/', label: 'Accueil' },
@@ -42,9 +52,34 @@ export default function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-4">
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <Search className="w-5 h-5 text-gray-700" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsSearchOpen((s) => !s)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="Ouvrir la recherche"
+              >
+                <Search className="w-5 h-5 text-gray-700" />
+              </button>
+              {isSearchOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const q = searchInput.current?.value?.trim();
+                      if (q) router.push(`/boutique?search=${encodeURIComponent(q)}`);
+                      setIsSearchOpen(false);
+                    }}
+                  >
+                    <input
+                      ref={searchInput}
+                      type="text"
+                      placeholder="Rechercher..."
+                      className="w-full px-3 py-2 border rounded focus:outline-none"
+                    />
+                  </form>
+                </div>
+              )}
+            </div>
             <Link href="/cart" className="p-2 hover:bg-gray-100 rounded-lg transition-colors relative">
               <ShoppingBag className="w-5 h-5 text-gray-700" />
               <span className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
