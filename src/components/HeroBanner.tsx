@@ -2,7 +2,7 @@
 
 export default function HeroBanner() {
   return (
-    <section className="relative h-96 md:h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-emerald-950 overflow-hidden">
+    <section className="relative min-h-[500px] md:h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-emerald-950 overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-0 -left-4 w-72 h-72 bg-emerald-600 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" />
@@ -12,10 +12,10 @@ export default function HeroBanner() {
       {/* Content */}
       <div className="relative h-full flex items-center justify-center px-4">
         <div className="text-center max-w-3xl">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
             Vêtements de <span className="text-emerald-400">qualité premium</span> pour votre style
           </h1>
-          <p className="text-lg md:text-xl text-gray-300 mb-8 leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-300 mb-6 sm:mb-8 leading-relaxed px-2">
             Découvrez notre collection exclusive de vêtements modernes et élégants. 
             Commandez simplement via WhatsApp et recevez chez vous.
           </p>

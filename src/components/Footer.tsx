@@ -7,23 +7,23 @@ import { BRAND_PHONE, BRAND_WHATSAPP, BRAND_INSTAGRAM, BRAND_FACEBOOK, BRAND_ADD
 export default function Footer() {
   return (
     <footer className="bg-gray-950 text-gray-300 mt-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid md:grid-cols-4 gap-8 mb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-12">
           {/* Brand */}
           <div>
             <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-bold text-lg mb-4">
               B
             </div>
-            <h3 className="text-white font-bold text-lg mb-2">Boutique Vêtements</h3>
-            <p className="text-sm text-gray-400">
+            <h3 className="text-white font-bold text-base sm:text-lg mb-2">Boutique Vêtements</h3>
+            <p className="text-xs sm:text-sm text-gray-400">
               Vêtements de qualité pour tous les styles. Commandez maintenant via WhatsApp.
             </p>
           </div>
 
           {/* Links */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Navigation</h4>
-            <ul className="space-y-2 text-sm">
+            <h4 className="text-white font-semibold text-sm sm:text-base mb-4">Navigation</h4>
+            <ul className="space-y-2 text-xs sm:text-sm">
               <li><Link href="/" className="hover:text-emerald-400 transition-colors">Accueil</Link></li>
               <li><Link href="/boutique" className="hover:text-emerald-400 transition-colors">Boutique</Link></li>
               <li><Link href="/about" className="hover:text-emerald-400 transition-colors">À propos</Link></li>
@@ -33,16 +33,16 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Contact</h4>
-            <ul className="space-y-3 text-sm">
+            <h4 className="text-white font-semibold text-sm sm:text-base mb-4">Contact</h4>
+            <ul className="space-y-3 text-xs sm:text-sm">
               <li className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-emerald-400" />
-                <a href={`tel:${BRAND_PHONE}`} className="hover:text-emerald-400 transition-colors">
+                <Phone className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <a href={`tel:${BRAND_PHONE}`} className="hover:text-emerald-400 transition-colors break-all">
                   {BRAND_PHONE}
                 </a>
               </li>
-              <li className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-emerald-400" />
+              <li className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-emerald-400 mt-1 flex-shrink-0" />
                 <span>{BRAND_ADDRESS}, {BRAND_CITY}</span>
               </li>
             </ul>
@@ -50,8 +50,8 @@ export default function Footer() {
 
           {/* Socials */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Suivez-nous</h4>
-            <div className="space-y-2 text-sm">
+            <h4 className="text-white font-semibold text-sm sm:text-base mb-4">Suivez-nous</h4>
+            <div className="space-y-2 text-xs sm:text-sm">
               <a href={`https://wa.me/${BRAND_WHATSAPP.replace(/\D/g, '')}`} className="block hover:text-emerald-400 transition-colors">
                 WhatsApp
               </a>
@@ -65,10 +65,10 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
+        <div className="border-t border-gray-800 pt-6 sm:pt-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm text-gray-400 gap-4">
             <p>&copy; 2024 Boutique Vêtements. Tous droits réservés.</p>
-            <div className="flex gap-6 mt-4 md:mt-0">
+            <div className="flex gap-4 sm:gap-6">
               <Link href="#" className="hover:text-emerald-400 transition-colors">Conditions</Link>
               <Link href="#" className="hover:text-emerald-400 transition-colors">Confidentialité</Link>
             </div>

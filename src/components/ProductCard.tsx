@@ -19,7 +19,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow">
       {/* Image */}
-      <div className="relative h-64 bg-gray-200 overflow-hidden">
+      <div className="relative h-48 sm:h-56 md:h-64 bg-gray-200 overflow-hidden">
         <Image
           src={product.image_url}
           alt={product.name}
@@ -54,16 +54,16 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Info */}
-      <div className="p-4">
-        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+      <div className="p-3 sm:p-4">
+        <p className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wide mb-1">
           {product.category}
         </p>
-        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 h-14">
+        <h3 className="font-semibold text-sm sm:text-base text-gray-900 mb-2 line-clamp-2 h-12 sm:h-14">
           {product.name}
         </h3>
         
         <div className="flex items-baseline gap-2 mb-3">
-          <span className="text-lg font-bold text-emerald-600">
+          <span className="text-base sm:text-lg font-bold text-emerald-600">
             {formatPrice(discount ? discountedPrice : product.price)}
           </span>
           {discount && (

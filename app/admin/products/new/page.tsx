@@ -143,9 +143,9 @@ export default function NewProductPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="max-w-2xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
 
-        <h1 className="text-3xl font-bold mb-2">Ajouter un produit</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Ajouter un produit</h1>
 
         {error && (
           <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
@@ -153,14 +153,14 @@ export default function NewProductPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
+        <form onSubmit={handleSubmit} className="bg-white p-4 sm:p-6 rounded-lg shadow">
 
           {/* IMAGE */}
           <div className="mb-6">
-            <label className="font-bold block mb-2">Image</label>
+            <label className="font-bold block mb-2 text-sm sm:text-base">Image</label>
 
             {imagePreview && (
-              <img src={imagePreview} className="w-40 mb-2 rounded" />
+              <img src={imagePreview} className="w-32 sm:w-40 mb-2 rounded" />
             )}
 
             <input
@@ -168,16 +168,17 @@ export default function NewProductPage() {
               accept="image/*"
               onChange={handleImageChange}
               disabled={isUploading}
+              className="text-sm"
             />
 
             {isUploading && (
-              <p className="text-sm text-gray-500">Upload en cours...</p>
+              <p className="text-xs sm:text-sm text-gray-500 mt-2">Upload en cours...</p>
             )}
           </div>
 
           {/* NAME */}
           <input
-            className="w-full border p-2 mb-3"
+            className="w-full border border-gray-300 p-2.5 sm:p-3 mb-3 rounded text-sm sm:text-base focus:outline-none focus:border-emerald-500"
             placeholder="Nom du produit"
             value={formData.name}
             onChange={(e) =>
@@ -188,7 +189,7 @@ export default function NewProductPage() {
           {/* PRICE */}
           <input
             type="number"
-            className="w-full border p-2 mb-3"
+            className="w-full border border-gray-300 p-2.5 sm:p-3 mb-3 rounded text-sm sm:text-base focus:outline-none focus:border-emerald-500"
             placeholder="Prix"
             value={formData.price}
             onChange={(e) =>
@@ -200,7 +201,7 @@ export default function NewProductPage() {
           <button
             type="submit"
             disabled={isLoading || isUploading}
-            className="w-full bg-green-600 text-white p-3 rounded"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 text-white p-3 sm:p-3 rounded font-semibold text-sm sm:text-base transition-colors"
           >
             {isLoading ? "Publication..." : "Publier"}
           </button>
