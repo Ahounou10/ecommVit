@@ -311,7 +311,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             disabled={isSaving}
             className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 text-white font-bold py-4 text-lg rounded-lg"
           >
-            {isSaving ? 'Enregistrement...' : '💾 Enregistrer les modifications'}
+            {isSaving ? 'Enregistrement...' : ' Enregistrer les modifications'}
           </button>
         </form>
       </div>

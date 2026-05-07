@@ -12,9 +12,9 @@ interface CategoryItem {
 
 export default function CategoriesPreview() {
   const categories: CategoryItem[] = [
-    { id: 'homme', name: 'Pour Homme', emoji: '👔', description: 'T-shirts, jeans, chemises' },
-    { id: 'femme', name: 'Pour Femme', emoji: '👗', description: 'Robes, chemises, accessoires' },
-    { id: 'mixte', name: 'Mixte', emoji: '👕', description: 'Pièces unisexe tendance' },
+    { id: 'homme', name: 'Pour Homme', emoji: '', description: 'T-shirts, jeans, chemises' },
+    { id: 'femme', name: 'Pour Femme', emoji: '', description: 'Robes, chemises, accessoires' },
+    { id: 'mixte', name: 'Mixte', emoji: '', description: 'Pièces unisexe tendance' },
   ];
 
   return (
@@ -34,19 +34,19 @@ export default function CategoriesPreview() {
             <Link
               key={cat.id}
               href={`/boutique?category=${cat.id}`}
-              className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 p-8 hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 hover:border-emerald-300"
+              className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 p-8 hover:shadow-xl transition-all duration-300 ease-out cursor-pointer border border-gray-200 hover:border-emerald-300 hover:scale-105"
             >
-              <div className="text-5xl mb-4">{cat.emoji}</div>
+              <div className="text-5xl mb-4 transition-transform duration-300 group-hover:scale-110">{cat.emoji}</div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">{cat.name}</h3>
               <p className="text-gray-600 text-sm mb-4">{cat.description}</p>
               
-              <div className="inline-flex items-center text-emerald-600 font-semibold group-hover:translate-x-2 transition-transform">
+              <div className="inline-flex items-center text-emerald-600 font-semibold group-hover:translate-x-2 transition-all duration-300">
                 Découvrir
-                <ArrowRight className="w-4 h-4 ml-2" />
+                <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:rotate-12" />
               </div>
 
               {/* Hover effect background */}
-              <div className="absolute -right-20 -top-20 w-40 h-40 bg-emerald-100 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute -right-20 -top-20 w-40 h-40 bg-emerald-100 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500" />
             </Link>
           ))}
         </div>

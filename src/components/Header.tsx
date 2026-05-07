@@ -61,7 +61,7 @@ export default function Header() {
                 <Search className="w-5 h-5 text-gray-700" />
               </button>
               {isSearchOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
+                <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg p-2 animate-zoom-in-95 animate-fade-in-fast">
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
@@ -101,13 +101,13 @@ export default function Header() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav className="md:hidden pb-4 border-t border-gray-200">
+          <nav className="md:hidden pb-4 border-t border-gray-200 animate-slide-in-from-top">
             <div className="flex flex-col gap-3 pt-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-gray-700 hover:text-emerald-600 transition-colors font-medium py-2"
+                  className="text-gray-700 hover:text-emerald-600 transition-colors font-medium py-2 hover:translate-x-1 transition-transform duration-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}

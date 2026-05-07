@@ -34,6 +34,9 @@ const config: Config = {
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in',
         'slide-up': 'slideUp 0.5s ease-out',
+        'fade-in-fast': 'fadeIn 0.3s ease-in',
+        'zoom-in-95': 'zoomIn95 0.2s ease-out',
+        'slide-in-from-top': 'slideInFromTop 0.3s ease-out',
       },
       keyframes: {
         fadeIn: {
@@ -42,6 +45,14 @@ const config: Config = {
         },
         slideUp: {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        zoomIn95: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        slideInFromTop: {
+          '0%': { opacity: '0', transform: 'translateY(-8px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
       },

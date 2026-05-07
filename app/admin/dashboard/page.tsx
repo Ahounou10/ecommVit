@@ -110,7 +110,7 @@ export default function AdminDashboard() {
 
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all duration-300 ease-out hover:shadow"
           >
             <LogOut className="w-4 h-4" />
             Déconnexion
@@ -176,7 +176,7 @@ export default function AdminDashboard() {
         <div className="mb-6">
           <Link
             href="/admin/products/new"
-            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-lg font-semibold transition"
+            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-lg font-semibold transition-all duration-300 ease-out hover:shadow-lg hover:scale-105"
           >
             <Plus className="w-5 h-5" />
             Ajouter un produit
@@ -246,7 +246,7 @@ export default function AdminDashboard() {
                         <div className="flex justify-end gap-2">
                           <Link
                             href={`/admin/products/${product.id}`}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-all duration-300 ease-out hover:scale-110"
                           >
                             <Edit2 className="w-4 h-4" />
                           </Link>
@@ -257,7 +257,7 @@ export default function AdminDashboard() {
                                 product.id
                               )
                             }
-                            className="p-2 text-red-600 hover:bg-red-50 rounded"
+                            className="p-2 text-red-600 hover:bg-red-50 rounded transition-all duration-300 ease-out hover:scale-110"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

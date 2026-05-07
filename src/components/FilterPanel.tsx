@@ -65,8 +65,8 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
 
       {/* Panel */}
       <div
-        className={`fixed md:relative inset-0 md:inset-auto bg-white md:bg-transparent z-40 md:z-0 transform transition-transform ${
-          isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        className={`fixed md:relative inset-0 md:inset-auto bg-white md:bg-transparent z-40 md:z-0 transform transition-all duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0 opacity-100' : '-translate-x-full md:translate-x-0 md:opacity-100 opacity-0'
         }`}
       >
         <div className="w-64 h-screen md:h-auto bg-white p-6 overflow-y-auto relative">

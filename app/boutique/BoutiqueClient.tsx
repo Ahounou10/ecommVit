@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import ProductGrid from '@/components/ProductGrid';
 import FilterPanel, { type FilterState } from '@/components/FilterPanel';
 import { createClient } from '@/supabase/client';
@@ -11,11 +11,10 @@ export default function BoutiqueClient({
 }: {
   category?: string | null;
 }) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
   const supabase = createClient();
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [filters, setFilters] = useState<FilterState>({
     search: '',
@@ -25,85 +24,92 @@ export default function BoutiqueClient({
     sizes: [],
   });
 
+  // ✅ FETCH PRODUCTS
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
 
-  useEffect(() => {
-    applyFilters();
-  }, [products, filters]);
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true)
+          .gt('stock', 0);
 
-  const fetchProducts = async () => {
-    try {
-      setIsLoading(true);
+        if (error) {
+          console.error('Erreur récupération produits:', error);
+          return;
+        }
 
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .gt('stock', 0);
-
-      if (error) {
-        console.error(error);
-        return;
+        setProducts(data || []);
+      } catch (error) {
+        console.error('Erreur:', error);
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-      setProducts(data || []);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    
+    fetchProducts();
+  }, [supabase]);
 
-  const applyFilters = () => {
-    let filtered = products;
+  // ✅ FILTER PRODUCTS (sans setState)
+  const filteredProducts = useMemo(() => {
+    let filtered = [...products];
 
-    // 🔎 Search
+    // 🔎 Recherche
     if (filters.search) {
       filtered = filtered.filter((p) =>
         p.name.toLowerCase().includes(filters.search.toLowerCase())
       );
     }
 
-    // 🏷️ Category
+    // 🏷️ Catégorie
     if (filters.category) {
-      filtered = filtered.filter((p) => p.category === filters.category);
+      filtered = filtered.filter(
+        (p) => p.category === filters.category
+      );
     }
 
-    // 🧩 Subcategory
+    // 🧩 Sous-catégorie
     if (filters.subcategory) {
-      filtered = filtered.filter((p) => p.subcategory === filters.subcategory);
+      filtered = filtered.filter(
+        (p) => p.subcategory === filters.subcategory
+      );
     }
 
-    // 💰 Price
+    // 💰 Prix
     filtered = filtered.filter((p) => {
-      const price = p.promo_percent
+      const finalPrice = p.promo_percent
         ? p.price * (1 - p.promo_percent / 100)
         : p.price;
 
       return (
-        price >= filters.priceRange[0] &&
-        price <= filters.priceRange[1]
+        finalPrice >= filters.priceRange[0] &&
+        finalPrice <= filters.priceRange[1]
       );
     });
 
-    // 👕 Sizes
+    // 👕 Tailles
     if (filters.sizes.length > 0) {
       filtered = filtered.filter((p) =>
-        filters.sizes.some((s) => p.sizes.includes(s))
+        filters.sizes.some((size) =>
+          p.sizes.includes(size)
+        )
       );
     }
 
-    setFilteredProducts(filtered);
-  };
+    return filtered;
+  }, [products, filters]);
 
   return (
     <div className="flex flex-col md:flex-row gap-8">
-      {/* Filters */}
+      {/* FILTERS */}
       <div className="md:w-64">
         <FilterPanel onFilterChange={setFilters} />
       </div>
 
-      {/* Products */}
+      {/* PRODUCTS */}
       <div className="flex-1">
         <ProductGrid
           products={filteredProducts}

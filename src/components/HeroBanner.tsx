@@ -22,13 +22,13 @@ export default function HeroBanner() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/boutique"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-lg"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 ease-out transform hover:scale-110 shadow-lg"
             >
               Découvrir la boutique
             </a>
             <a
               href="#nouveautes"
-              className="bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-lg font-semibold border border-white/30 transition-all"
+              className="bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-lg font-semibold border border-white/30 transition-all duration-300 ease-out hover:scale-105 hover:border-white/50"
             >
               Voir les nouveautés
             </a>
