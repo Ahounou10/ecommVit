@@ -10,11 +10,7 @@ import {
 } from '@/lib/utils';
 
 export default function CartPage() {
-  const [cart, setCart] = useState<CartItem[]>([]);
-
-  useEffect(() => {
-    setCart(getCart());
-  }, []);
+  const [cart, setCart] = useState<CartItem[]>(() => getCart());
 
   // 🧠 TOTAL SAFE (évite les crashs)
   const total = cart.reduce((sum, item) => {

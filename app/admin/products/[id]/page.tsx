@@ -276,7 +276,7 @@ export default function EditProductPage({
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  category: e.target.value,
+                  category: e.target.value as "homme" | "femme" | "mixte",
                 })
               }
               className="w-full border p-3 rounded"
@@ -300,7 +300,11 @@ export default function EditProductPage({
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  subcategory: e.target.value,
+                 subcategory: e.target.value as
+  | "tshirts"
+  | "jeans"
+  | "robes"
+  | "chaussures",
                 })
               }
               className="w-full border p-3 rounded"
