@@ -142,7 +142,7 @@ export default function CartPage() {
           target="_blank"
           className="block mt-6 bg-green-600 hover:bg-green-700 text-white text-center py-4 rounded-xl font-bold transition"
         >
-          Commander via WhatsApp 📲
+          Commander via WhatsApp 
         </a>
       </div>
     </div>
