@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Image from 'next/image';
 import { ShoppingBag, Heart } from 'lucide-react';
 import { createClient } from '@/supabase/client';
@@ -14,8 +14,11 @@ import type { Product } from '@/types';
 export default function ProductPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  // ✅ Next.js 16 : récupérer params proprement
+  const { id } = use(params);
+
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedSize, setSelectedSize] = useState('M');
   const [selectedColor, setSelectedColor] = useState('Noir');
@@ -24,7 +27,7 @@ export default function ProductPage({
 
   const supabase = createClient();
 
-  // ✅ fetch DANS useEffect uniquement (UNE SEULE FOIS)
+  // ✅ fetch produit
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -33,10 +36,10 @@ export default function ProductPage({
         const { data, error } = await supabase
           .from('products')
           .select('*')
-          .eq('id', params.id)
+          .eq('id', id)
           .single();
 
-        if (error) {
+        if (error || !data) {
           setProduct(null);
           return;
         }
@@ -50,8 +53,10 @@ export default function ProductPage({
       }
     };
 
-    fetchProduct();
-  }, [params.id, supabase]);
+    if (id) {
+      fetchProduct();
+    }
+  }, [id, supabase]);
 
   // loading
   if (isLoading) {
@@ -131,7 +136,9 @@ export default function ProductPage({
               >
                 <Heart
                   className={
-                    isFavorite ? 'text-red-500 fill-red-500' : ''
+                    isFavorite
+                      ? 'text-red-500 fill-red-500'
+                      : ''
                   }
                 />
               </button>

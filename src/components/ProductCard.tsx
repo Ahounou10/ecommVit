@@ -11,7 +11,7 @@ interface ProductCardProps {
   product: Product;
 }
 
-type CartItem = {
+type CartItem = { 
   product: Product;
   quantity: number;
 };
@@ -53,7 +53,7 @@ function addToCart(product: Product) {
     );
   }
 
-  alert('Produit ajouté au panier 🛒');
+  alert('Produit ajouté au panier ');
 }
 
 export default function ProductCard({
