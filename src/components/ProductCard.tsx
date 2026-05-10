@@ -11,7 +11,7 @@ interface ProductCardProps {
   product: Product;
 }
 
-type CartItem = { 
+type CartItem = {
   product: Product;
   quantity: number;
 };
@@ -37,28 +37,20 @@ function addToCart(product: Product) {
         : item
     );
 
-    localStorage.setItem(
-      'cart',
-      JSON.stringify(updated)
-    );
+    localStorage.setItem('cart', JSON.stringify(updated));
   } else {
     cart.push({
       product,
       quantity: 1,
     });
 
-    localStorage.setItem(
-      'cart',
-      JSON.stringify(cart)
-    );
+    localStorage.setItem('cart', JSON.stringify(cart));
   }
 
-  alert('Produit ajouté au panier ');
+  alert('Produit ajouté au panier 🛒');
 }
 
-export default function ProductCard({
-  product,
-}: ProductCardProps) {
+export default function ProductCard({ product }: ProductCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   if (!product) return null;
@@ -91,7 +83,7 @@ export default function ProductCard({
             </div>
           )}
 
-          {/* DESKTOP (hover only) */}
+          {/* DESKTOP ACTIONS */}
           <div className="hidden sm:flex absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition items-end justify-between p-4">
 
             <button
@@ -122,7 +114,7 @@ export default function ProductCard({
 
           </div>
 
-          {/* MOBILE (TOUJOURS VISIBLE) */}
+          {/* MOBILE ACTIONS (IMPORTANT pour ton problème) */}
           <div className="sm:hidden absolute bottom-2 right-2 flex gap-2">
 
             <button
@@ -163,9 +155,7 @@ export default function ProductCard({
 
           <div className="text-emerald-600 font-bold">
             {formatPrice(
-              discount
-                ? discountedPrice
-                : product.price
+              discount ? discountedPrice : product.price
             )}
           </div>
         </div>

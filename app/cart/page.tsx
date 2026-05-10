@@ -38,7 +38,7 @@ export default function CartPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-12">
         <h1 className="text-3xl font-bold mb-4">Panier</h1>
-        <p className="text-gray-500">Ton panier est vide 🛒</p>
+        <p className="text-gray-500">Ton panier est vide </p>
       </div>
     );
   }
@@ -55,7 +55,7 @@ export default function CartPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-8">Mon Panier 🛒</h1>
+      <h1 className="text-3xl font-bold mb-8">Mon Panier </h1>
 
       <div className="space-y-5">
         {cart.map((item, index) => {
