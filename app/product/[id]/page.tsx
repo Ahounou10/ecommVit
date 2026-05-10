@@ -16,7 +16,7 @@ export default function ProductPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  // ✅ Next.js 16 : récupérer params proprement
+  //  Next.js 16 : récupérer params proprement
   const { id } = use(params);
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -27,7 +27,7 @@ export default function ProductPage({
 
   const supabase = createClient();
 
-  // ✅ fetch produit
+  //  fetch produit
   useEffect(() => {
     const fetchProduct = async () => {
       try {

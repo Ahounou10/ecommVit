@@ -44,13 +44,7 @@ export default function CartPage() {
   }
 
   const message = cart
-    .map((item) =>
-      formatWhatsAppMessage(
-        item.product,
-        item.size || '',
-        item.color || ''
-      )
-    )
+    .map((item) => formatWhatsAppMessage(item))
     .join('\n');
 
   return (

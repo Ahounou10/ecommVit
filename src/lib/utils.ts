@@ -18,29 +18,32 @@ export function getDiscountedPrice(price: number, discount: number): number {
   return Math.round(price * (1 - discount / 100));
 }
 
-export function formatWhatsAppMessage(
-  product: Product,
-  size: string,
-  color: string
-): string {
-  const discountedPrice = getDiscountedPrice(
-    product.price,
-    product.promo_percent
-  );
+export type CartItem = {
+  product: Product;
+  quantity: number;
+  size?: string;
+  color?: string;
+};
 
-  return `
-Bonjour, je veux commander :
+// ✅ VERSION SÉCURISÉE (SANS any)
+export function formatWhatsAppMessage(item: CartItem): string {
+  const product = item.product;
 
-🛍 Produit : ${product.name}
- Taille : ${size}
- Couleur : ${color}
- Prix : ${formatPrice(discountedPrice)}
+  const price = product.promo_percent
+    ? getDiscountedPrice(product.price, product.promo_percent)
+    : product.price;
 
- Image :
-${product.image_url}
+  return ` *Commande produit*
 
-Merci.
-`;
+ Produit : ${product.name}
+ Taille : ${item.size || 'Non précisé'}
+ Couleur : ${item.color || 'Non précisé'}
+ Quantité : ${item.quantity}
+ Prix : ${price} FCFA
+
+ Image : ${product.image_url}
+
+Merci `;
 }
 
 export function getWhatsAppLink(message: string) {
