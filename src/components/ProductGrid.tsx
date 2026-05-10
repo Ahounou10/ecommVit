@@ -8,30 +8,36 @@ interface ProductGridProps {
   isLoading?: boolean;
 }
 
-export default function ProductGrid({ products, isLoading }: ProductGridProps) {
+export default function ProductGrid({
+  products,
+  isLoading = false,
+}: ProductGridProps) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-        {[...Array(8)].map((_, i) => (
-          <div key={i} className="bg-gray-200 rounded-lg h-80 animate-pulse" />
-        ))}
-      </div>
+      <p className="text-center py-10 text-gray-500">
+        Chargement des produits...
+      </p>
     );
   }
 
-  if (products.length === 0) {
+  if (!products || products.length === 0) {
     return (
-      <div className="col-span-full text-center py-12">
-        <p className="text-gray-500 text-lg">Aucun produit trouvé</p>
-      </div>
+      <p className="text-center py-10 text-gray-500">
+        Aucun produit disponible
+      </p>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {products
+        .filter((product) => product && product.id)
+        .map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+          />
+        ))}
     </div>
   );
 }

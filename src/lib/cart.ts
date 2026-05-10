@@ -9,11 +9,12 @@ export type CartItem = {
 
 const CART_KEY = 'cart';
 
+
 // récupérer panier
 export function getCart(): CartItem[] {
   if (typeof window === 'undefined') return [];
   const data = localStorage.getItem(CART_KEY);
-  return data ? JSON.parse(data) : [];
+  return data ? (JSON.parse(data) as CartItem[]) : [];
 }
 
 // sauvegarder panier
