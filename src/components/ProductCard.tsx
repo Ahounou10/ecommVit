@@ -23,9 +23,7 @@ function addToCart(product: Product) {
   );
 
   const exists = cart.find(
-    (item) =>
-      item?.product &&
-      item.product.id === product.id
+    (item) => item?.product?.id === product.id
   );
 
   if (exists) {
@@ -54,7 +52,7 @@ function addToCart(product: Product) {
     );
   }
 
-  alert('Produit ajouté au panier 🛒');
+  alert('Produit ajouté au panier ');
 }
 
 export default function ProductCard({
@@ -77,7 +75,9 @@ export default function ProductCard({
   return (
     <div className="group bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition">
 
+      {/* IMAGE */}
       <div className="relative h-48 bg-gray-200 overflow-hidden">
+
         <Image
           src={product.image_url}
           alt={product.name}
@@ -85,13 +85,15 @@ export default function ProductCard({
           className="object-cover"
         />
 
+        {/* PROMO */}
         {discount && (
           <div className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full">
             -{product.promo_percent}%
           </div>
         )}
 
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-end justify-between p-4">
+        {/* DESKTOP (hover only) */}
+        <div className="hidden sm:flex absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition items-end justify-between p-4">
 
           <button
             onClick={() =>
@@ -118,8 +120,39 @@ export default function ProductCard({
           </button>
 
         </div>
+
+        {/* MOBILE (TOUJOURS VISIBLE) */}
+        <div className="sm:hidden absolute bottom-2 right-2 flex gap-2">
+
+          <button
+            onClick={() =>
+              setIsFavorite(!isFavorite)
+            }
+            className="bg-white p-2 rounded-full shadow"
+          >
+            <Heart
+              className={
+                isFavorite
+                  ? 'text-red-500 fill-red-500'
+                  : ''
+              }
+            />
+          </button>
+
+          <button
+            onClick={() =>
+              addToCart(product)
+            }
+            className="bg-emerald-600 text-white p-2 rounded-full shadow"
+          >
+            <ShoppingBag className="w-5 h-5" />
+          </button>
+
+        </div>
+
       </div>
 
+      {/* INFO */}
       <div className="p-4">
         <h3 className="font-semibold">
           {product.name}
@@ -133,6 +166,7 @@ export default function ProductCard({
           )}
         </div>
       </div>
+
     </div>
   );
 }
