@@ -7,7 +7,7 @@ import { getCart } from '@/lib/cart';
 import {
   formatPrice,
   getWhatsAppLink,
-  formatWhatsAppMessage,
+  formatCartWhatsAppMessage,
   getDiscountedPrice,
 } from '@/lib/utils';
 
@@ -43,9 +43,7 @@ export default function CartPage() {
     );
   }
 
-  const message = cart
-    .map((item) => formatWhatsAppMessage(item))
-    .join('\n');
+  const message = formatCartWhatsAppMessage(cart);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">

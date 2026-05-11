@@ -2,13 +2,14 @@
 
 import { useState, useEffect, use } from 'react';
 import Image from 'next/image';
-import { ShoppingBag, Heart } from 'lucide-react';
+import { ShoppingBag, Heart, Check } from 'lucide-react';
 import { createClient } from '@/supabase/client';
 import {
   formatPrice,
   getDiscountedPrice,
   getWhatsAppLink,
 } from '@/lib/utils';
+import { addToCart } from '@/lib/cart';
 import type { Product } from '@/types';
 
 export default function ProductPage({
@@ -16,18 +17,17 @@ export default function ProductPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  //  Next.js 16 : récupérer params proprement
   const { id } = use(params);
-
   const [product, setProduct] = useState<Product | null>(null);
-  const [selectedSize, setSelectedSize] = useState('M');
-  const [selectedColor, setSelectedColor] = useState('Noir');
+  const [selectedSize, setSelectedSize] = useState<string>('M');
+  const [selectedColor, setSelectedColor] = useState<string>('Noir');
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [addedToCart, setAddedToCart] = useState(false);
+  const [showAddedMessage, setShowAddedMessage] = useState(false);
 
   const supabase = createClient();
 
-  //  fetch produit
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -39,7 +39,7 @@ export default function ProductPage({
           .eq('id', id)
           .single();
 
-        if (error || !data) {
+        if (error) {
           setProduct(null);
           return;
         }
@@ -53,12 +53,9 @@ export default function ProductPage({
       }
     };
 
-    if (id) {
-      fetchProduct();
-    }
-  }, [id, supabase]);
+    fetchProduct();
+  }, [id]);
 
-  // loading
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -67,7 +64,6 @@ export default function ProductPage({
     );
   }
 
-  // produit introuvable
   if (!product) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -76,17 +72,44 @@ export default function ProductPage({
     );
   }
 
-  const discountedPrice = getDiscountedPrice(
+  const price = getDiscountedPrice(
     product.price,
     product.promo_percent
   );
 
   const isSoldOut = product.stock === 0;
 
-  const handleWhatsAppOrder = () => {
-    const message = `Bonjour, je veux commander ${product.name} taille ${selectedSize} couleur ${selectedColor} - ${formatPrice(
-      discountedPrice
-    )}`;
+  const handleAddToCart = () => {
+    addToCart({
+      product,
+      quantity: 1,
+      size: selectedSize,
+      color: selectedColor,
+    });
+
+    setAddedToCart(true);
+    setShowAddedMessage(true);
+
+    // Masquer le message après 3 secondes
+    setTimeout(() => {
+      setShowAddedMessage(false);
+    }, 3000);
+  };
+
+  const handleWhatsApp = () => {
+    const message = `
+🛒 *Nouvelle commande depuis la page produit*
+
+Produit : ${product.name}
+Taille : ${selectedSize}
+Couleur : ${selectedColor}
+Quantité : 1
+Prix : ${formatPrice(price)}
+
+Lien produit : ${product.image_url}
+
+Merci !
+    `;
 
     const link = getWhatsAppLink(message);
     window.open(link, '_blank');
@@ -112,37 +135,101 @@ export default function ProductPage({
             <h1 className="text-3xl font-bold">{product.name}</h1>
 
             <p className="text-emerald-600 text-xl font-bold mt-2">
-              {formatPrice(discountedPrice)}
+              {formatPrice(price)}
             </p>
 
             <p className="text-gray-600 mt-4">
               {product.description}
             </p>
 
-            {/* ACTIONS */}
-            <div className="flex gap-4 mt-6">
+            {/* SIZE */}
+            <div className="mt-6">
+              <h3 className="font-semibold mb-2">Taille</h3>
+              <div className="flex gap-2">
+                {['S', 'M', 'L', 'XL'].map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`px-4 py-2 border rounded-lg ${
+                      selectedSize === size
+                        ? 'bg-black text-white'
+                        : ''
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* COLOR */}
+            <div className="mt-6">
+              <h3 className="font-semibold mb-2">Couleur</h3>
+              <div className="flex gap-2">
+                {['Noir', 'Blanc', 'Bleu'].map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => setSelectedColor(color)}
+                    className={`px-4 py-2 border rounded-lg ${
+                      selectedColor === color
+                        ? 'bg-black text-white'
+                        : ''
+                    }`}
+                  >
+                    {color}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* BUTTON */}
+            <div className="flex gap-4 mt-8">
+
               <button
-                onClick={handleWhatsAppOrder}
+                onClick={handleAddToCart}
                 disabled={isSoldOut}
-                className="bg-emerald-600 text-white px-6 py-3 rounded-lg"
+                className={`flex-1 px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition ${
+                  showAddedMessage
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }`}
               >
-                <ShoppingBag className="inline w-5 h-5 mr-2" />
+                {showAddedMessage ? (
+                  <>
+                    <Check className="w-5 h-5" />
+                    Ajouté au panier !
+                  </>
+                ) : (
+                  <>
+                    <ShoppingBag className="w-5 h-5" />
+                    Ajouter au panier
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={handleWhatsApp}
+                disabled={isSoldOut}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold"
+              >
                 Commander
               </button>
 
               <button
                 onClick={() => setIsFavorite(!isFavorite)}
-                className="border px-4 py-3 rounded-lg"
+                className="border px-4 py-3 rounded-lg hover:bg-gray-100 transition"
               >
                 <Heart
-                  className={
+                  className={`w-5 h-5 ${
                     isFavorite
                       ? 'text-red-500 fill-red-500'
                       : ''
-                  }
+                  }`}
                 />
               </button>
+
             </div>
+
           </div>
 
         </div>

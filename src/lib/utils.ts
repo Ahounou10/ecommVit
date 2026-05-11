@@ -25,7 +25,7 @@ export type CartItem = {
   color?: string;
 };
 
-// ✅ VERSION SÉCURISÉE (SANS any)
+// Format pour un seul produit (commande directe)
 export function formatWhatsAppMessage(item: CartItem): string {
   const product = item.product;
 
@@ -34,7 +34,7 @@ export function formatWhatsAppMessage(item: CartItem): string {
     : product.price;
 
   return ` *Commande produit*
-
+Bonjour, je souhaite commander ce produit :
  Produit : ${product.name}
  Taille : ${item.size || 'Non précisé'}
  Couleur : ${item.color || 'Non précisé'}
@@ -44,6 +44,45 @@ export function formatWhatsAppMessage(item: CartItem): string {
  Image : ${product.image_url}
 
 Merci `;
+}
+
+// Format pour le panier (plusieurs produits cohérent)
+export function formatCartWhatsAppMessage(items: CartItem[]): string {
+  const productsList = items
+    .map((item, index) => {
+      const product = item.product;
+      const price = product.promo_percent
+        ? getDiscountedPrice(product.price, product.promo_percent)
+        : product.price;
+
+      return `${index + 1}. ${product.name}
+   • Taille : ${item.size || 'Non précisé'}
+   • Couleur : ${item.color || 'Non précisé'}
+   • Quantité : ${item.quantity}
+   • Prix unitaire : ${price} FCFA
+   • Sous-total : ${price * item.quantity} FCFA`;
+    })
+    .join('\n\n');
+
+  const total = items.reduce((sum, item) => {
+    const product = item.product;
+    const price = product.promo_percent
+      ? getDiscountedPrice(product.price, product.promo_percent)
+      : product.price;
+    return sum + price * item.quantity;
+  }, 0);
+
+  return ` *COMMANDE - PANIER*
+
+Bonjour, je souhaite passer la commande suivante :
+
+${productsList}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ *TOTAL : ${total} FCFA*
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Merci !`;
 }
 
 export function getWhatsAppLink(message: string) {
