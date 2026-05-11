@@ -3,13 +3,14 @@
 import { useState, useEffect, use } from 'react';
 import Image from 'next/image';
 import { ShoppingBag, Heart, Check } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/supabase/client';
 import {
   formatPrice,
   getDiscountedPrice,
   getWhatsAppLink,
 } from '@/lib/utils';
-import { addToCart } from '@/lib/cart';
+import { addToCart, getCart } from '@/lib/cart';
 import type { Product } from '@/types';
 
 export default function ProductPage({
@@ -18,13 +19,20 @@ export default function ProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const cartIndex = searchParams.get('cartIndex');
+  const urlSize = searchParams.get('size') || 'M';
+  const urlColor = searchParams.get('color') || 'Noir';
+
   const [product, setProduct] = useState<Product | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string>('M');
-  const [selectedColor, setSelectedColor] = useState<string>('Noir');
+  const [selectedSize, setSelectedSize] = useState<string>(urlSize);
+  const [selectedColor, setSelectedColor] = useState<string>(urlColor);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [addedToCart, setAddedToCart] = useState(false);
   const [showAddedMessage, setShowAddedMessage] = useState(false);
+  const isEditingFromCart = cartIndex !== null;
 
   const supabase = createClient();
 
@@ -80,6 +88,16 @@ export default function ProductPage({
   const isSoldOut = product.stock === 0;
 
   const handleAddToCart = () => {
+    if (!product) return;
+
+    // Si on modifie depuis le panier, supprimer l'ancien et ajouter le nouveau
+    if (isEditingFromCart && cartIndex !== null) {
+      const cart = getCart();
+      const updated = [...cart];
+      updated.splice(parseInt(cartIndex), 1);
+      localStorage.setItem('cart', JSON.stringify(updated));
+    }
+
     addToCart({
       product,
       quantity: 1,
@@ -87,13 +105,19 @@ export default function ProductPage({
       color: selectedColor,
     });
 
-    setAddedToCart(true);
     setShowAddedMessage(true);
 
-    // Masquer le message après 3 secondes
-    setTimeout(() => {
-      setShowAddedMessage(false);
-    }, 3000);
+    // Rediriger au panier après 1 seconde si on vient du panier
+    if (isEditingFromCart) {
+      setTimeout(() => {
+        router.push('/cart');
+      }, 1000);
+    } else {
+      // Masquer le message après 3 secondes si on vient de la boutique
+      setTimeout(() => {
+        setShowAddedMessage(false);
+      }, 3000);
+    }
   };
 
   const handleWhatsApp = () => {
@@ -190,19 +214,23 @@ Merci !
                 disabled={isSoldOut}
                 className={`flex-1 px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition ${
                   showAddedMessage
-                    ? 'bg-emerald-600 text-white'
+                    ? isEditingFromCart 
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-emerald-600 text-white'
+                    : isEditingFromCart
+                    ? 'bg-orange-600 hover:bg-orange-700 text-white'
                     : 'bg-blue-600 hover:bg-blue-700 text-white'
                 }`}
               >
                 {showAddedMessage ? (
                   <>
                     <Check className="w-5 h-5" />
-                    Ajouté au panier !
+                    {isEditingFromCart ? 'Mise à jour...' : 'Ajouté au panier !'}
                   </>
                 ) : (
                   <>
                     <ShoppingBag className="w-5 h-5" />
-                    Ajouter au panier
+                    {isEditingFromCart ? 'Mettre à jour' : 'Ajouter au panier'}
                   </>
                 )}
               </button>

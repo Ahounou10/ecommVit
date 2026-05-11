@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Edit2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { getCart } from '@/lib/cart';
 import {
   formatPrice,
@@ -13,6 +14,7 @@ import {
 
 export default function CartPage() {
   const [cart, setCart] = useState(() => getCart());
+  const router = useRouter();
 
   function removeItem(index: number) {
     const updated = [...cart];
@@ -20,6 +22,14 @@ export default function CartPage() {
 
     localStorage.setItem('cart', JSON.stringify(updated));
     setCart(updated);
+  }
+
+  function editItem(index: number) {
+    // Rediriger vers la page produit avec l'index du panier
+    const item = cart[index];
+    router.push(
+      `/product/${item.product.id}?cartIndex=${index}&size=${item.size || 'M'}&color=${item.color || 'Noir'}`
+    );
   }
 
   const total = cart.reduce((sum, item) => {
@@ -105,16 +115,25 @@ export default function CartPage() {
               </div>
 
               {/* ACTIONS */}
-              <div className="text-right">
-                <p className="font-bold mb-3">
+              <div className="text-right space-y-2">
+                <p className="font-bold">
                   {formatPrice(price * item.quantity)}
                 </p>
 
                 <button
-                  onClick={() => removeItem(index)}
-                  className="text-red-500 hover:text-red-700"
+                  onClick={() => editItem(index)}
+                  className="block w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-2 rounded text-sm font-medium transition"
                 >
-                  <Trash2 size={20} />
+                  <Edit2 className="inline-block mr-1" size={16} />
+                  Modifier
+                </button>
+
+                <button
+                  onClick={() => removeItem(index)}
+                  className="block w-full text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-2 rounded text-sm font-medium transition"
+                >
+                  <Trash2 className="inline-block mr-1" size={16} />
+                  Supprimer
                 </button>
               </div>
             </div>
