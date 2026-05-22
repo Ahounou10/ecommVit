@@ -20,6 +20,7 @@ export default function ProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -28,16 +29,18 @@ export default function ProductPage({
   const urlColor = searchParams.get('color') || 'Noir';
 
   const [product, setProduct] = useState<Product | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string>(urlSize);
-  const [selectedColor, setSelectedColor] = useState<string>(urlColor);
+  const [selectedSize, setSelectedSize] = useState(urlSize);
+  const [selectedColor, setSelectedColor] = useState(urlColor);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddedMessage, setShowAddedMessage] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   const isEditingFromCart = cartItemId !== null;
+
   const supabase = createClient();
 
+  // FETCH PRODUIT
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -50,11 +53,15 @@ export default function ProductPage({
           .single();
 
         if (error) {
+          console.error(error);
           setProduct(null);
           return;
         }
 
         setProduct(data);
+      } catch (err) {
+        console.error('Erreur produit:', err);
+        setProduct(null);
       } finally {
         setIsLoading(false);
       }
@@ -63,18 +70,24 @@ export default function ProductPage({
     fetchProduct();
   }, [id]);
 
+  // FERMER MODAL AVEC ESC
   useEffect(() => {
-    if (showImageModal) {
-      const handleEscapeKey = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          setShowImageModal(false);
-        }
-      };
-      window.addEventListener('keydown', handleEscapeKey);
-      return () => window.removeEventListener('keydown', handleEscapeKey);
-    }
+    if (!showImageModal) return;
+
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowImageModal(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleEscapeKey);
+
+    return () => {
+      window.removeEventListener('keydown', handleEscapeKey);
+    };
   }, [showImageModal]);
 
+  // LOADING
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -83,6 +96,7 @@ export default function ProductPage({
     );
   }
 
+  // PRODUIT INTROUVABLE
   if (!product) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -91,16 +105,35 @@ export default function ProductPage({
     );
   }
 
-  const price = getDiscountedPrice(product.price, product.promo_percent);
+  const price = getDiscountedPrice(
+    product.price,
+    product.promo_percent
+  );
+
   const isSoldOut = product.stock === 0;
 
-  // Récupère les images avec fallback sur image_url
-  const productImages = product.images && product.images.length > 0 
-    ? product.images 
-    : product.image_url ? [product.image_url] : [];
-  
-  const currentImage = productImages[selectedImageIndex] || productImages[0];
-  
+  // GALERIE IMAGES SAFE
+  const productImages =
+    Array.isArray(product.images) &&
+    product.images.length > 0
+      ? product.images
+      : product.image_url
+      ? [product.image_url]
+      : [];
+
+  // SAFE INDEX
+  const safeSelectedIndex =
+    productImages.length > 0
+      ? Math.min(
+          selectedImageIndex,
+          productImages.length - 1
+        )
+      : 0;
+
+  const currentImage =
+    productImages[safeSelectedIndex];
+
+  // IMAGE MANQUANTE
   if (!currentImage) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -109,6 +142,7 @@ export default function ProductPage({
     );
   }
 
+  // AJOUT PANIER
   const handleAddToCart = () => {
     if (isEditingFromCart && cartItemId) {
       updateCartItemById(
@@ -118,18 +152,29 @@ export default function ProductPage({
         selectedSize,
         selectedColor
       );
+
       dispatchCartUpdate();
     } else {
-      addToCart(product, 1, selectedSize, selectedColor);
+      addToCart(
+        product,
+        1,
+        selectedSize,
+        selectedColor
+      );
     }
 
     setShowAddedMessage(true);
 
     setTimeout(() => {
       setShowAddedMessage(false);
-    }, 2500);
+
+      if (isEditingFromCart) {
+        router.push('/cart');
+      }
+    }, 1500);
   };
 
+  // WHATSAPP
   const handleWhatsApp = () => {
     const message = `
 *Bonjour je souhaite commander ce produit*
@@ -139,24 +184,28 @@ Taille : ${selectedSize}
 Couleur : ${selectedColor}
 
 Merci !
-    `;
+`;
 
-    window.open(getWhatsAppLink(message), '_blank');
+    window.open(
+      getWhatsAppLink(message),
+      '_blank'
+    );
   };
 
   return (
     <div className="min-h-screen bg-white px-4 py-6">
       <div className="max-w-5xl mx-auto">
-        
-        {/* GRID RESPONSIVE */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-          {/* IMAGE GALLERY */}
+          {/* GALERIE */}
           <div className="w-full max-w-md mx-auto">
-            {/* MAIN IMAGE */}
-            <div
+
+            {/* IMAGE PRINCIPALE */}
+            <button
+              type="button"
               onClick={() => setShowImageModal(true)}
-              className="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-200 cursor-pointer hover:shadow-lg transition-shadow"
+              className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-100 hover:shadow-lg transition"
             >
               <Image
                 src={currentImage}
@@ -164,28 +213,31 @@ Merci !
                 fill
                 className="object-contain"
                 sizes="(max-width: 768px) 100vw, 50vw"
+                priority
               />
-            </div>
+            </button>
 
-            {/* THUMBNAILS */}
+            {/* MINIATURES */}
             {productImages.length > 1 && (
               <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
                 {productImages.map((img, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setSelectedImageIndex(idx)}
-                    className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition ${
-                      selectedImageIndex === idx
+                    type="button"
+                    onClick={() =>
+                      setSelectedImageIndex(idx)
+                    }
+                    className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 flex-shrink-0 transition ${
+                      safeSelectedIndex === idx
                         ? 'border-black'
-                        : 'border-gray-300 hover:border-gray-400'
+                        : 'border-gray-300'
                     }`}
                   >
                     <Image
                       src={img}
-                      alt={`${product.name} - ${idx}`}
-                      width={64}
-                      height={64}
-                      className="w-full h-full object-cover"
+                      alt={`${product.name}-${idx}`}
+                      fill
+                      className="object-cover"
                     />
                   </button>
                 ))}
@@ -196,30 +248,36 @@ Merci !
           {/* DETAILS */}
           <div className="w-full">
 
-            <h1 className="text-xl md:text-3xl font-bold">
+            <h1 className="text-2xl md:text-3xl font-bold">
               {product.name}
             </h1>
 
-            <p className="text-emerald-600 text-lg md:text-xl font-bold mt-2">
+            <p className="text-emerald-600 text-xl font-bold mt-3">
               {formatPrice(price)}
             </p>
 
-            <p className="text-gray-600 mt-4 text-sm md:text-base">
+            <p className="text-gray-600 mt-4 leading-relaxed text-sm md:text-base">
               {product.description}
             </p>
 
-            {/* SIZE */}
+            {/* TAILLES */}
             <div className="mt-6">
-              <h3 className="font-semibold mb-2">Taille</h3>
+              <h3 className="font-semibold mb-3">
+                Taille
+              </h3>
+
               <div className="flex flex-wrap gap-2">
                 {['S', 'M', 'L', 'XL'].map((size) => (
                   <button
                     key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`px-3 py-2 border rounded-lg text-sm ${
+                    type="button"
+                    onClick={() =>
+                      setSelectedSize(size)
+                    }
+                    className={`px-4 py-2 rounded-lg border text-sm transition ${
                       selectedSize === size
-                        ? 'bg-black text-white'
-                        : ''
+                        ? 'bg-black text-white border-black'
+                        : 'bg-white hover:bg-gray-100'
                     }`}
                   >
                     {size}
@@ -228,18 +286,24 @@ Merci !
               </div>
             </div>
 
-            {/* COLOR */}
+            {/* COULEURS */}
             <div className="mt-6">
-              <h3 className="font-semibold mb-2">Couleur</h3>
+              <h3 className="font-semibold mb-3">
+                Couleur
+              </h3>
+
               <div className="flex flex-wrap gap-2">
                 {['Noir', 'Blanc', 'Bleu'].map((color) => (
                   <button
                     key={color}
-                    onClick={() => setSelectedColor(color)}
-                    className={`px-3 py-2 border rounded-lg text-sm ${
+                    type="button"
+                    onClick={() =>
+                      setSelectedColor(color)
+                    }
+                    className={`px-4 py-2 rounded-lg border text-sm transition ${
                       selectedColor === color
-                        ? 'bg-black text-white'
-                        : ''
+                        ? 'bg-black text-white border-black'
+                        : 'bg-white hover:bg-gray-100'
                     }`}
                   >
                     {color}
@@ -248,13 +312,14 @@ Merci !
               </div>
             </div>
 
-            {/* BUTTONS MOBILE SAFE */}
+            {/* BOUTONS */}
             <div className="flex flex-col sm:flex-row gap-3 mt-8">
 
               <button
+                type="button"
                 onClick={handleAddToCart}
                 disabled={isSoldOut}
-                className={`w-full sm:flex-1 px-4 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 text-sm ${
+                className={`w-full sm:flex-1 py-3 px-4 rounded-lg font-semibold flex items-center justify-center gap-2 transition ${
                   showAddedMessage
                     ? 'bg-emerald-600 text-white'
                     : isEditingFromCart
@@ -270,32 +335,35 @@ Merci !
                 ) : (
                   <>
                     <ShoppingBag className="w-5 h-5" />
-                    Ajouter
+                    {isEditingFromCart
+                      ? 'Mettre à jour'
+                      : 'Ajouter'}
                   </>
                 )}
               </button>
 
               <button
+                type="button"
                 onClick={handleWhatsApp}
                 disabled={isSoldOut}
-                className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-semibold text-sm"
+                className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition"
               >
                 Commander
               </button>
 
             </div>
-
           </div>
         </div>
       </div>
 
-      {/* LIGHTBOX MODAL */}
+      {/* MODAL IMAGE */}
       {showImageModal && (
         <div
           onClick={() => setShowImageModal(false)}
-          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
         >
-          <div className="relative w-full h-full max-w-4xl max-h-4xl flex items-center justify-center">
+          <div className="relative w-full h-full max-w-5xl max-h-[90vh]">
+
             <Image
               src={currentImage}
               alt={product.name}
@@ -303,13 +371,15 @@ Merci !
               className="object-contain"
               sizes="100vw"
             />
+
             <button
+              type="button"
               onClick={() => setShowImageModal(false)}
               className="absolute top-4 right-4 bg-white rounded-full p-2 hover:bg-gray-200 transition"
-              aria-label="Fermer"
             >
               <X className="w-6 h-6 text-black" />
             </button>
+
           </div>
         </div>
       )}
