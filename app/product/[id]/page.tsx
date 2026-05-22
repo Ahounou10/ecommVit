@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import Image from 'next/image';
-import { ShoppingBag, Heart, Check } from 'lucide-react';
+import { ShoppingBag, Check, X } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/supabase/client';
 import {
@@ -30,9 +30,9 @@ export default function ProductPage({
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedSize, setSelectedSize] = useState<string>(urlSize);
   const [selectedColor, setSelectedColor] = useState<string>(urlColor);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddedMessage, setShowAddedMessage] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   const isEditingFromCart = cartItemId !== null;
   const supabase = createClient();
@@ -61,6 +61,18 @@ export default function ProductPage({
 
     fetchProduct();
   }, [id]);
+
+  useEffect(() => {
+    if (showImageModal) {
+      const handleEscapeKey = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setShowImageModal(false);
+        }
+      };
+      window.addEventListener('keydown', handleEscapeKey);
+      return () => window.removeEventListener('keydown', handleEscapeKey);
+    }
+  }, [showImageModal]);
 
   if (isLoading) {
     return (
@@ -125,7 +137,10 @@ Merci !
 
           {/* IMAGE */}
           <div className="w-full max-w-md mx-auto">
-            <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-200">
+            <div
+              onClick={() => setShowImageModal(true)}
+              className="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-200 cursor-pointer hover:shadow-lg transition-shadow"
+            >
               <Image
                 src={product.image_url}
                 alt={product.name}
@@ -226,22 +241,36 @@ Merci !
                 Commander
               </button>
 
-              <button
-                onClick={() => setIsFavorite(!isFavorite)}
-                className="w-12 h-12 flex items-center justify-center border rounded-lg hover:bg-gray-100"
-              >
-                <Heart
-                  className={`w-5 h-5 ${
-                    isFavorite ? 'text-red-500 fill-red-500' : ''
-                  }`}
-                />
-              </button>
-
             </div>
 
           </div>
         </div>
       </div>
+
+      {/* LIGHTBOX MODAL */}
+      {showImageModal && (
+        <div
+          onClick={() => setShowImageModal(false)}
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+        >
+          <div className="relative w-full h-full max-w-4xl max-h-4xl flex items-center justify-center">
+            <Image
+              src={product.image_url}
+              alt={product.name}
+              fill
+              className="object-contain"
+              sizes="100vw"
+            />
+            <button
+              onClick={() => setShowImageModal(false)}
+              className="absolute top-4 right-4 bg-white rounded-full p-2 hover:bg-gray-200 transition"
+              aria-label="Fermer"
+            >
+              <X className="w-6 h-6 text-black" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
