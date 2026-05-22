@@ -124,13 +124,13 @@ export default function ProductPage({
 
   const handleWhatsApp = () => {
     const message = `
-🛒 *Nouvelle commande depuis la page produit*
+ *Bonjour je souhait commander ce produit*
 
 Produit : ${product.name}
 Taille : ${selectedSize}
 Couleur : ${selectedColor}
 Quantité : 1
-Prix : ${formatPrice(price)}
+
 
 Lien produit : ${product.image_url}
 

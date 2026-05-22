@@ -4,10 +4,6 @@ import { Search, X } from 'lucide-react';
 import { useState } from 'react';
 import { CATEGORIES, SUBCATEGORIES } from '@/lib/constants';
 
-interface FilterProps {
-  onFilterChange?: (filters: FilterState) => void;
-}
-
 export interface FilterState {
   search: string;
   category: string | null;
@@ -16,16 +12,20 @@ export interface FilterState {
   sizes: string[];
 }
 
+interface FilterProps {
+  onFilterChange?: (filters: FilterState) => void;
+}
+
 export default function FilterPanel({ onFilterChange }: FilterProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const [filters, setFilters] = useState<FilterState>({
-  search: '',
-  category: null,
-  subcategory: null,
-  priceRange: [0, 500000] as [number, number],
-  sizes: [],
-});
+    search: '',
+    category: null,
+    subcategory: null,
+    priceRange: [0, 500000],
+    sizes: [],
+  });
 
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
     const updated = { ...filters, ...newFilters };
@@ -54,24 +54,35 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
 
   return (
     <>
-      {/* Mobile Filter Button */}
+      {/* Mobile Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen(true)}
         className="md:hidden flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 mb-6"
       >
         <Search className="w-4 h-4" />
         Filtrer {activeFilters > 0 && `(${activeFilters})`}
       </button>
 
-      {/* Panel */}
-      <div
-        className={`fixed md:relative inset-0 md:inset-auto bg-white md:bg-transparent z-40 md:z-0 transform transition-all duration-300 ease-in-out ${
-          isOpen ? 'translate-x-0 opacity-100' : '-translate-x-full md:translate-x-0 md:opacity-100 opacity-0'
-        }`}
-      >
-        <div className="w-64 h-screen md:h-auto bg-white p-6 overflow-y-auto relative">
+      {/* BACKDROP (séparé proprement) */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
 
-          {/* Close */}
+      {/* PANEL MOBILE + DESKTOP */}
+      <div
+        className={`
+          fixed md:relative top-0 left-0 h-full md:h-auto w-80 md:w-64
+          bg-white z-50 md:z-auto
+          transform transition-transform duration-300
+          ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}
+      >
+        <div className="p-6 h-full overflow-y-auto relative">
+
+          {/* Close mobile */}
           <button
             onClick={() => setIsOpen(false)}
             className="md:hidden absolute top-4 right-4"
@@ -79,23 +90,17 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
             <X className="w-5 h-5" />
           </button>
 
-          <h2 className="text-lg font-bold text-gray-900 mb-6">
-            Filtres
-          </h2>
+          <h2 className="text-lg font-bold mb-6">Filtres</h2>
 
-          {/* Search */}
+          {/* SEARCH */}
           <div className="mb-6">
-            <label className="block text-sm font-medium mb-2">
-              Rechercher
-            </label>
+            <label className="text-sm font-medium">Rechercher</label>
 
-            <div className="relative">
+            <div className="relative mt-2">
               <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
 
               <input
-                type="text"
-                placeholder="Nom du produit..."
-                className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500"
+                className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm"
                 value={filters.search}
                 onChange={(e) =>
                   handleFilterChange({ search: e.target.value })
@@ -104,58 +109,48 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
             </div>
           </div>
 
-          {/* Category */}
+          {/* CATEGORY */}
           <div className="mb-6">
-            <h3 className="text-sm font-semibold mb-3">
-              Catégorie
-            </h3>
+            <h3 className="text-sm font-semibold mb-3">Catégorie</h3>
 
-            <div className="space-y-2">
-              {Object.entries(CATEGORIES).map(([key, label]) => (
-                <label key={key} className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="category"
-                    checked={filters.category === key}
-                    onChange={() =>
-                      handleFilterChange({ category: key })
-                    }
-                  />
-                  <span className="ml-3 text-sm">{label}</span>
-                </label>
-              ))}
-            </div>
+            {Object.entries(CATEGORIES).map(([key, label]) => (
+              <label key={key} className="flex items-center mb-2">
+                <input
+                  type="radio"
+                  name="category"
+                  checked={filters.category === key}
+                  onChange={() =>
+                    handleFilterChange({ category: key })
+                  }
+                />
+                <span className="ml-2 text-sm">{label}</span>
+              </label>
+            ))}
           </div>
 
-          {/* Subcategory */}
+          {/* SUBCATEGORY */}
           <div className="mb-6">
-            <h3 className="text-sm font-semibold mb-3">
-              Type
-            </h3>
+            <h3 className="text-sm font-semibold mb-3">Type</h3>
 
-            <div className="space-y-2">
-              {Object.entries(SUBCATEGORIES).map(([key, label]) => (
-                <label key={key} className="flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={filters.subcategory === key}
-                    onChange={(e) =>
-                      handleFilterChange({
-                        subcategory: e.target.checked ? key : null,
-                      })
-                    }
-                  />
-                  <span className="ml-3 text-sm">{label}</span>
-                </label>
-              ))}
-            </div>
+            {Object.entries(SUBCATEGORIES).map(([key, label]) => (
+              <label key={key} className="flex items-center mb-2">
+                <input
+                  type="checkbox"
+                  checked={filters.subcategory === key}
+                  onChange={(e) =>
+                    handleFilterChange({
+                      subcategory: e.target.checked ? key : null,
+                    })
+                  }
+                />
+                <span className="ml-2 text-sm">{label}</span>
+              </label>
+            ))}
           </div>
 
-          {/* Price */}
+          {/* PRICE */}
           <div className="mb-6">
-            <h3 className="text-sm font-semibold mb-3">
-              Prix
-            </h3>
+            <h3 className="text-sm font-semibold mb-3">Prix</h3>
 
             <input
               type="range"
@@ -165,10 +160,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
               value={filters.priceRange[1]}
               onChange={(e) =>
                 handleFilterChange({
-                  priceRange: [
-                    0,
-                    Number(e.target.value),
-                  ],
+                  priceRange: [0, Number(e.target.value)],
                 })
               }
               className="w-full"
@@ -179,11 +171,9 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
             </div>
           </div>
 
-          {/* Sizes */}
+          {/* SIZES */}
           <div className="mb-6">
-            <h3 className="text-sm font-semibold mb-3">
-              Tailles
-            </h3>
+            <h3 className="text-sm font-semibold mb-3">Tailles</h3>
 
             <div className="grid grid-cols-3 gap-2">
               {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
@@ -208,7 +198,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
             </div>
           </div>
 
-          {/* Reset */}
+          {/* RESET */}
           {activeFilters > 0 && (
             <button
               onClick={clearFilters}
@@ -218,14 +208,6 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
             </button>
           )}
         </div>
-
-        {/* Backdrop */}
-        {isOpen && (
-          <div
-            className="fixed inset-0 bg-black/40 md:hidden"
-            onClick={() => setIsOpen(false)}
-          />
-        )}
       </div>
     </>
   );

@@ -29,18 +29,13 @@ export type CartItem = {
 export function formatWhatsAppMessage(item: CartItem): string {
   const product = item.product;
 
-  const price = product.promo_percent
-    ? getDiscountedPrice(product.price, product.promo_percent)
-    : product.price;
-
   return ` *Commande produit*
 Bonjour, je souhaite commander ce produit :
- Produit : ${product.name}
+ Nom : ${product.name}
  Taille : ${item.size || 'Non précisé'}
  Couleur : ${item.color || 'Non précisé'}
  Quantité : ${item.quantity}
- Prix : ${price} FCFA
-
+ 
  Image : ${product.image_url}
 
 Merci `;
@@ -52,13 +47,9 @@ export function formatCartWhatsAppMessage(items: CartItem[]): string {
     .map((item, index) => {
       const product = item.product;
 
-      const price = product.promo_percent
-        ? getDiscountedPrice(product.price, product.promo_percent)
-        : product.price;
-
       return `Produit ${index + 1}
 
-🛍 Produit : ${product.name}
+ Nom : ${product.name}
 
  Taille : ${item.size || 'Non précisé'}
 
@@ -66,35 +57,18 @@ export function formatCartWhatsAppMessage(items: CartItem[]): string {
 
  Quantité : ${item.quantity}
 
- Prix unitaire : ${price} FCFA
-
- Sous-total : ${price * item.quantity} FCFA
-
  Image :
 ${product.image_url}`;
     })
-    .join('\n\n━━━━━━━━━━━━━━━━━━\n\n');
+    .join('\n\n━━━━━━━━━━━━━━\n\n');
 
-  const total = items.reduce((sum, item) => {
-    const product = item.product;
-
-    const price = product.promo_percent
-      ? getDiscountedPrice(product.price, product.promo_percent)
-      : product.price;
-
-    return sum + price * item.quantity;
-  }, 0);
+  
 
   return ` *COMMANDE - PANIER*
 
 Bonjour, je souhaite passer la commande suivante :
 
 ${productsList}
-
-
- *TOTAL : ${total} FCFA*
-
-
 
 Merci !`;
 }
