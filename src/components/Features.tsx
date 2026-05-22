@@ -42,7 +42,7 @@ export default function Features() {
           {features.map((feature, idx) => {
             const Icon = feature.icon;
             return (
-              <div key={idx} className="text-center group hover:scale-105 transition-transform duration-300 ease-out">
+              <div key={feature.title} className="text-center group hover:scale-105 transition-transform duration-300 ease-out">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
                   <Icon className="w-8 h-8" />
                 </div>

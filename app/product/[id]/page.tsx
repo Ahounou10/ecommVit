@@ -10,7 +10,8 @@ import {
   getDiscountedPrice,
   getWhatsAppLink,
 } from '@/lib/utils';
-import { addToCart, getCart } from '@/lib/cart';
+import { addToCart, getCartItemById, updateCartItemById } from '@/lib/cart';
+import { dispatchCartUpdate } from '@/hooks/useCartSync';
 import type { Product } from '@/types';
 
 export default function ProductPage({
@@ -22,7 +23,7 @@ export default function ProductPage({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const cartIndex = searchParams.get('cartIndex');
+  const cartItemId = searchParams.get('cartItemId');
   const urlSize = searchParams.get('size') || 'M';
   const urlColor = searchParams.get('color') || 'Noir';
 
@@ -32,7 +33,7 @@ export default function ProductPage({
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddedMessage, setShowAddedMessage] = useState(false);
-  const isEditingFromCart = cartIndex !== null;
+  const isEditingFromCart = cartItemId !== null;
 
   const supabase = createClient();
 
@@ -90,20 +91,21 @@ export default function ProductPage({
   const handleAddToCart = () => {
     if (!product) return;
 
-    // Si on modifie depuis le panier, supprimer l'ancien et ajouter le nouveau
-    if (isEditingFromCart && cartIndex !== null) {
-      const cart = getCart();
-      const updated = [...cart];
-      updated.splice(parseInt(cartIndex), 1);
-      localStorage.setItem('cart', JSON.stringify(updated));
+    // Si on modifie depuis le panier, mettre à jour l'article avec son ID
+    if (isEditingFromCart && cartItemId !== null) {
+      updateCartItemById(
+        cartItemId,
+        product,
+        1,
+        selectedSize,
+        selectedColor
+      );
+      // Notifier le panier de la mise à jour
+      dispatchCartUpdate();
+    } else {
+      // Sinon, ajouter normalement au panier
+      addToCart(product, 1, selectedSize, selectedColor);
     }
-
-    addToCart({
-      product,
-      quantity: 1,
-      size: selectedSize,
-      color: selectedColor,
-    });
 
     setShowAddedMessage(true);
 

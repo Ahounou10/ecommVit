@@ -24,13 +24,15 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   if (!product) return null;
 
-  // ✅ TOAST PROPRE
+  // valeurs par défaut depuis la boutique
+  const defaultSize = 'M';
+  const defaultColor = 'Noir';
+
   function showToast(message: string) {
     setToast(message);
     setTimeout(() => setToast(null), 2000);
   }
 
-  // ✅ AJOUT PANIER PROPRE
   function addToCart(product: Product) {
     if (typeof window === 'undefined') return;
 
@@ -38,14 +40,23 @@ export default function ProductCard({ product }: ProductCardProps) {
       localStorage.getItem('cart') || '[]'
     );
 
+    // cherche même produit + même taille + même couleur
     const exists = cart.find(
-      (item) => item.product.id === product.id
+      (item) =>
+        item.product.id === product.id &&
+        item.size === defaultSize &&
+        item.color === defaultColor
     );
 
     if (exists) {
       const updated = cart.map((item) =>
-        item.product.id === product.id
-          ? { ...item, quantity: item.quantity + 1 }
+        item.product.id === product.id &&
+        item.size === defaultSize &&
+        item.color === defaultColor
+          ? {
+              ...item,
+              quantity: item.quantity + 1,
+            }
           : item
       );
 
@@ -54,15 +65,15 @@ export default function ProductCard({ product }: ProductCardProps) {
       const newItem: CartItem = {
         product,
         quantity: 1,
-        size: 'M',
-        color: 'Noir',
+        size: defaultSize,
+        color: defaultColor,
       };
 
       cart.push(newItem);
       localStorage.setItem('cart', JSON.stringify(cart));
     }
 
-    showToast('Produit ajouté au panier ');
+    showToast('Produit ajouté au panier');
   }
 
   const discountedPrice = getDiscountedPrice(
@@ -75,11 +86,10 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <>
       <Link href={`/product/${product.id}`}>
-        <div className="group bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition">
+        <div className="group bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition cursor-pointer">
 
           {/* IMAGE */}
           <div className="relative h-48 bg-gray-200 overflow-hidden">
-
             <Image
               src={product.image_url}
               alt={product.name}
@@ -105,7 +115,9 @@ export default function ProductCard({ product }: ProductCardProps) {
               >
                 <Heart
                   className={
-                    isFavorite ? 'text-red-500 fill-red-500' : ''
+                    isFavorite
+                      ? 'text-red-500 fill-red-500'
+                      : ''
                   }
                 />
               </button>
@@ -122,7 +134,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
             </div>
 
-            {/* MOBILE (important pour ton problème) */}
+            {/* MOBILE */}
             <div className="sm:hidden absolute bottom-2 right-2 flex gap-2">
 
               <button
@@ -134,7 +146,9 @@ export default function ProductCard({ product }: ProductCardProps) {
               >
                 <Heart
                   className={
-                    isFavorite ? 'text-red-500 fill-red-500' : ''
+                    isFavorite
+                      ? 'text-red-500 fill-red-500'
+                      : ''
                   }
                 />
               </button>
@@ -150,7 +164,6 @@ export default function ProductCard({ product }: ProductCardProps) {
               </button>
 
             </div>
-
           </div>
 
           {/* INFO */}
@@ -159,15 +172,16 @@ export default function ProductCard({ product }: ProductCardProps) {
 
             <div className="text-emerald-600 font-bold">
               {formatPrice(
-                discount ? discountedPrice : product.price
+                discount
+                  ? discountedPrice
+                  : product.price
               )}
             </div>
           </div>
-
         </div>
       </Link>
 
-      {/* ✅ TOAST GLOBAL (hors Link = important) */}
+      {/* TOAST */}
       {toast && (
         <div className="fixed top-4 right-4 bg-black text-white px-4 py-2 rounded-lg shadow-lg z-50">
           {toast}

@@ -33,8 +33,8 @@ export default function BoutiqueClient({
         const { data, error } = await supabase
           .from('products')
           .select('*')
-          .eq('is_active', true)
-          .gt('stock', 0);
+          .order('created_at', { ascending: false });
+          
 
         if (error) {
           console.error('Erreur récupération produits:', error);
