@@ -142,13 +142,25 @@ export default function ProductCard({ product }: ProductCardProps) {
           <div className="p-4">
             <h3 className="font-semibold">{product.name}</h3>
 
-            <div className="text-emerald-600 font-bold">
-              {formatPrice(
-                discount
-                  ? discountedPrice
-                  : product.price
-              )}
-            </div>
+            <div className="mt-2 flex items-center gap-2 flex-wrap">
+
+  {/* Nouveau prix */}
+  <span className="text-emerald-600 font-bold text-lg">
+    {formatPrice(
+      discount
+        ? discountedPrice
+        : product.price
+    )}
+  </span>
+
+  {/* Ancien prix */}
+  {discount && (
+    <span className="text-sm text-gray-400 line-through">
+      {formatPrice(product.price)}
+    </span>
+  )}
+
+</div>
           </div>
         </div>
       </Link>

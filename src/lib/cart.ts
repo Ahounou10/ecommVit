@@ -1,5 +1,4 @@
 import type { Product } from '@/types';
-import { dispatchCartUpdate } from '@/hooks/useCartSync';
 
 export type CartItem = {
   cartItemId: string;
@@ -11,17 +10,17 @@ export type CartItem = {
 
 const CART_KEY = 'cart';
 
-// notifier React que le panier a changé
+// 🔔 notifier toute l'app que le panier a changé
 function notifyCartUpdate() {
   window.dispatchEvent(new Event('cartUpdated'));
 }
 
-// générer ID unique
+// 🔑 générer ID unique
 function generateCartItemId(): string {
   return crypto.randomUUID();
 }
 
-// récupérer panier
+// 📥 récupérer panier
 export function getCart(): CartItem[] {
   if (typeof window === 'undefined') return [];
 
@@ -36,8 +35,7 @@ export function getCart(): CartItem[] {
 
     return parsed.map((item) => ({
       ...item,
-      cartItemId:
-        item.cartItemId || crypto.randomUUID(),
+      cartItemId: item.cartItemId || crypto.randomUUID(),
     }));
   } catch (error) {
     console.error('Cart parse error:', error);
@@ -45,17 +43,16 @@ export function getCart(): CartItem[] {
   }
 }
 
-// sauvegarder panier
+// 💾 sauvegarder panier
 export function saveCart(cart: CartItem[]): void {
-  localStorage.setItem(
-    CART_KEY,
-    JSON.stringify(cart)
-  );
+  if (typeof window === 'undefined') return;
 
-  dispatchCartUpdate();
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+
+  notifyCartUpdate();
 }
 
-// ajouter produit
+// ➕ ajouter produit
 export function addToCart(
   product: Product,
   quantity: number,
@@ -77,7 +74,7 @@ export function addToCart(
   saveCart(cart);
 }
 
-// modifier item précis
+// ✏️ modifier item précis
 export function updateCartItemById(
   cartItemId: string,
   product: Product,
@@ -88,17 +85,12 @@ export function updateCartItemById(
   const cart = getCart();
 
   const updated = cart.map((item) => {
-    if (item.cartItemId !== cartItemId) {
-      return item;
-    }
+    if (item.cartItemId !== cartItemId) return item;
 
     return {
       ...item,
       product,
-      quantity:
-        quantity !== undefined
-          ? quantity
-          : item.quantity,
+      quantity: quantity !== undefined ? quantity : item.quantity,
       size: size ?? item.size,
       color: color ?? item.color,
     };
@@ -107,10 +99,8 @@ export function updateCartItemById(
   saveCart(updated);
 }
 
-// supprimer item
-export function removeCartItemById(
-  cartItemId: string
-): void {
+// ❌ supprimer item
+export function removeCartItemById(cartItemId: string): void {
   const cart = getCart();
 
   const updated = cart.filter(
@@ -120,7 +110,7 @@ export function removeCartItemById(
   saveCart(updated);
 }
 
-// récupérer item précis
+// 🔍 récupérer item précis
 export function getCartItemById(
   cartItemId: string
 ): CartItem | undefined {
@@ -131,9 +121,11 @@ export function getCartItemById(
   );
 }
 
-// vider panier
+// 🧹 vider panier
 export function clearCart(): void {
+  if (typeof window === 'undefined') return;
+
   localStorage.removeItem(CART_KEY);
 
-  dispatchCartUpdate();
+  notifyCartUpdate();
 }

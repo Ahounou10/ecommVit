@@ -10,6 +10,7 @@ export interface FilterState {
   subcategory: string | null;
   priceRange: [number, number];
   sizes: string[];
+  colors: string[]; // ✅ AJOUT COULEURS
 }
 
 interface FilterProps {
@@ -25,6 +26,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
     subcategory: null,
     priceRange: [0, 500000],
     sizes: [],
+    colors: [], // ✅ AJOUT
   });
 
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
@@ -40,6 +42,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
       subcategory: null,
       priceRange: [0, 500000],
       sizes: [],
+      colors: [], // ✅ AJOUT
     };
 
     setFilters(cleared);
@@ -50,11 +53,14 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
     filters.category,
     filters.subcategory,
     filters.sizes.length > 0 && `${filters.sizes.length} tailles`,
+    filters.colors.length > 0 && `${filters.colors.length} couleurs`, // ✅ AJOUT
   ].filter(Boolean).length;
+
+  const COLORS = ['Noir', 'Blanc', 'Bleu', 'Rouge', 'Vert'];
 
   return (
     <>
-      {/* Mobile Button */}
+      {/* MOBILE BUTTON */}
       <button
         onClick={() => setIsOpen(true)}
         className="md:hidden flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 mb-6"
@@ -63,7 +69,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
         Filtrer {activeFilters > 0 && `(${activeFilters})`}
       </button>
 
-      {/* BACKDROP (séparé proprement) */}
+      {/* BACKDROP */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 md:hidden"
@@ -71,7 +77,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
         />
       )}
 
-      {/* PANEL MOBILE + DESKTOP */}
+      {/* PANEL */}
       <div
         className={`
           fixed md:relative top-0 left-0 h-full md:h-auto w-80 md:w-64
@@ -82,7 +88,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
       >
         <div className="p-6 h-full overflow-y-auto relative">
 
-          {/* Close mobile */}
+          {/* CLOSE */}
           <button
             onClick={() => setIsOpen(false)}
             className="md:hidden absolute top-4 right-4"
@@ -193,6 +199,33 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
                   }`}
                 >
                   {size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* COLORS ✅ AJOUTÉ */}
+          <div className="mb-6">
+            <h3 className="text-sm font-semibold mb-3">Couleurs</h3>
+
+            <div className="grid grid-cols-2 gap-2">
+              {COLORS.map((color) => (
+                <button
+                  key={color}
+                  onClick={() => {
+                    const updated = filters.colors.includes(color)
+                      ? filters.colors.filter((c) => c !== color)
+                      : [...filters.colors, color];
+
+                    handleFilterChange({ colors: updated });
+                  }}
+                  className={`py-2 border rounded text-sm ${
+                    filters.colors.includes(color)
+                      ? 'bg-black text-white'
+                      : ''
+                  }`}
+                >
+                  {color}
                 </button>
               ))}
             </div>

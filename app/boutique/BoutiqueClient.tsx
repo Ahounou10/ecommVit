@@ -22,6 +22,7 @@ export default function BoutiqueClient({
     subcategory: null,
     priceRange: [0, 500000],
     sizes: [],
+    colors: [], // ✅ AJOUT IMPORTANT
   });
 
   // ✅ FETCH PRODUCTS
@@ -34,7 +35,6 @@ export default function BoutiqueClient({
           .from('products')
           .select('*')
           .order('created_at', { ascending: false });
-          
 
         if (error) {
           console.error('Erreur récupération produits:', error);
@@ -49,36 +49,31 @@ export default function BoutiqueClient({
       }
     };
 
-    
     fetchProducts();
   }, [supabase]);
 
-  // ✅ FILTER PRODUCTS (sans setState)
+  // ✅ FILTER PRODUCTS
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
 
-    // 🔎 Recherche
+    // 🔎 SEARCH
     if (filters.search) {
       filtered = filtered.filter((p) =>
         p.name.toLowerCase().includes(filters.search.toLowerCase())
       );
     }
 
-    // 🏷️ Catégorie
+    // 🏷️ CATEGORY
     if (filters.category) {
-      filtered = filtered.filter(
-        (p) => p.category === filters.category
-      );
+      filtered = filtered.filter((p) => p.category === filters.category);
     }
 
-    // 🧩 Sous-catégorie
+    // 🧩 SUBCATEGORY
     if (filters.subcategory) {
-      filtered = filtered.filter(
-        (p) => p.subcategory === filters.subcategory
-      );
+      filtered = filtered.filter((p) => p.subcategory === filters.subcategory);
     }
 
-    // 💰 Prix
+    // 💰 PRICE
     filtered = filtered.filter((p) => {
       const finalPrice = p.promo_percent
         ? p.price * (1 - p.promo_percent / 100)
@@ -90,11 +85,18 @@ export default function BoutiqueClient({
       );
     });
 
-    // 👕 Tailles
+    // 👕 SIZES
     if (filters.sizes.length > 0) {
       filtered = filtered.filter((p) =>
-        filters.sizes.some((size) =>
-          p.sizes.includes(size)
+        filters.sizes.some((size) => p.sizes?.includes(size))
+      );
+    }
+
+    // 🎨 COLORS ✅ NOUVEAU
+    if (filters.colors.length > 0) {
+      filtered = filtered.filter((p) =>
+        filters.colors.some((color) =>
+          p.colors?.includes(color)
         )
       );
     }

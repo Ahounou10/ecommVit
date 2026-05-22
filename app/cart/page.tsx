@@ -25,9 +25,11 @@ export default function CartPage() {
 
   // ✅ supprimer UN item précis
   function removeItem(cartItemId: string) {
-    removeCartItemById(cartItemId);
-    setCart(getCart());
-  }
+  removeCartItemById(cartItemId);
+  setCart(getCart());
+
+  window.dispatchEvent(new Event('cartUpdated'));
+}
 
   // ✅ modifier UN item précis
   function editItem(
@@ -122,9 +124,6 @@ export default function CartPage() {
 
               {/* ACTIONS */}
               <div className="text-right space-y-2">
-                <p className="font-bold">
-                  {formatPrice(price * item.quantity)}
-                </p>
 
                 <button
                   onClick={() =>

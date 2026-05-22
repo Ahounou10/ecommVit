@@ -252,9 +252,28 @@ Merci !
               {product.name}
             </h1>
 
-            <p className="text-emerald-600 text-xl font-bold mt-3">
-              {formatPrice(price)}
-            </p>
+            <div className="flex items-center gap-3 mt-2 flex-wrap">
+
+  {/* Nouveau prix */}
+  <p className="text-emerald-600 text-2xl md:text-3xl font-bold">
+    {formatPrice(price)}
+  </p>
+
+  {/* Ancien prix */}
+  {product.promo_percent > 0 && (
+    <p className="text-gray-400 line-through text-lg md:text-xl">
+      {formatPrice(product.price)}
+    </p>
+  )}
+
+  {/* Badge promo */}
+  {product.promo_percent > 0 && (
+    <span className="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
+      -{product.promo_percent}%
+    </span>
+  )}
+
+</div>
 
             <p className="text-gray-600 mt-4 leading-relaxed text-sm md:text-base">
               {product.description}
@@ -267,7 +286,7 @@ Merci !
               </h3>
 
               <div className="flex flex-wrap gap-2">
-                {['S', 'M', 'L', 'XL'].map((size) => (
+                {product.sizes?.map((size) => (
                   <button
                     key={size}
                     type="button"
@@ -293,7 +312,7 @@ Merci !
               </h3>
 
               <div className="flex flex-wrap gap-2">
-                {['Noir', 'Blanc', 'Bleu'].map((color) => (
+           {product.colors?.map((color) => (
                   <button
                     key={color}
                     type="button"
@@ -312,6 +331,35 @@ Merci !
               </div>
             </div>
 
+            {/* STOCK */}
+<div className="mt-4">
+
+  {product.stock > 0 ? (
+
+    <div
+      className={`font-medium ${
+        product.stock <= 3
+          ? 'text-orange-600'
+          : 'text-emerald-600'
+      }`}
+    >
+      {product.stock <= 3
+        ? ` Plus que ${product.stock} en stock`
+        : ` En stock : ${product.stock} disponible${
+            product.stock > 1 ? 's' : ''
+          }`}
+    </div>
+
+  ) : (
+
+    <div className="text-red-600 font-semibold">
+       Rupture de stock
+    </div>
+
+  )}
+
+</div>
+
             {/* BOUTONS */}
             <div className="flex flex-col sm:flex-row gap-3 mt-8">
 
@@ -319,13 +367,15 @@ Merci !
                 type="button"
                 onClick={handleAddToCart}
                 disabled={isSoldOut}
-                className={`w-full sm:flex-1 py-3 px-4 rounded-lg font-semibold flex items-center justify-center gap-2 transition ${
-                  showAddedMessage
-                    ? 'bg-emerald-600 text-white'
-                    : isEditingFromCart
-                    ? 'bg-orange-600 hover:bg-orange-700 text-white'
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
-                }`}
+                className={`w-full sm:flex-1 px-4 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 text-sm transition-all duration-200 ${
+  isSoldOut
+    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+    : showAddedMessage
+    ? 'bg-emerald-600 text-white'
+    : isEditingFromCart
+    ? 'bg-orange-600 hover:bg-orange-700 text-white active:scale-95'
+    : 'bg-blue-600 hover:bg-blue-700 text-white active:scale-95'
+}`}
               >
                 {showAddedMessage ? (
                   <>
@@ -346,7 +396,11 @@ Merci !
                 type="button"
                 onClick={handleWhatsApp}
                 disabled={isSoldOut}
-                className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition"
+                className={`w-full sm:flex-1 px-4 py-3 rounded-lg font-semibold text-sm transition-all duration-200 ${
+  isSoldOut
+    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+    : 'bg-green-600 hover:bg-green-700 text-white active:scale-95'
+}`}
               >
                 Commander
               </button>
@@ -355,6 +409,9 @@ Merci !
           </div>
         </div>
       </div>
+
+
+      
 
       {/* MODAL IMAGE */}
       {showImageModal && (
