@@ -10,7 +10,7 @@ import {
   getDiscountedPrice,
   getWhatsAppLink,
 } from '@/lib/utils';
-import { addToCart, getCartItemById, updateCartItemById } from '@/lib/cart';
+import { addToCart, updateCartItemById } from '@/lib/cart';
 import { dispatchCartUpdate } from '@/hooks/useCartSync';
 import type { Product } from '@/types';
 
@@ -33,8 +33,8 @@ export default function ProductPage({
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddedMessage, setShowAddedMessage] = useState(false);
-  const isEditingFromCart = cartItemId !== null;
 
+  const isEditingFromCart = cartItemId !== null;
   const supabase = createClient();
 
   useEffect(() => {
@@ -54,9 +54,6 @@ export default function ProductPage({
         }
 
         setProduct(data);
-      } catch (err) {
-        console.error(err);
-        setProduct(null);
       } finally {
         setIsLoading(false);
       }
@@ -81,18 +78,11 @@ export default function ProductPage({
     );
   }
 
-  const price = getDiscountedPrice(
-    product.price,
-    product.promo_percent
-  );
-
+  const price = getDiscountedPrice(product.price, product.promo_percent);
   const isSoldOut = product.stock === 0;
 
   const handleAddToCart = () => {
-    if (!product) return;
-
-    // Si on modifie depuis le panier, mettre à jour l'article avec son ID
-    if (isEditingFromCart && cartItemId !== null) {
+    if (isEditingFromCart && cartItemId) {
       updateCartItemById(
         cartItemId,
         product,
@@ -100,83 +90,76 @@ export default function ProductPage({
         selectedSize,
         selectedColor
       );
-      // Notifier le panier de la mise à jour
       dispatchCartUpdate();
     } else {
-      // Sinon, ajouter normalement au panier
       addToCart(product, 1, selectedSize, selectedColor);
     }
 
     setShowAddedMessage(true);
 
-    // Rediriger au panier après 1 seconde si on vient du panier
-    if (isEditingFromCart) {
-      setTimeout(() => {
-        router.push('/cart');
-      }, 1000);
-    } else {
-      // Masquer le message après 3 secondes si on vient de la boutique
-      setTimeout(() => {
-        setShowAddedMessage(false);
-      }, 3000);
-    }
+    setTimeout(() => {
+      setShowAddedMessage(false);
+    }, 2500);
   };
 
   const handleWhatsApp = () => {
     const message = `
- *Bonjour je souhait commander ce produit*
+*Bonjour je souhaite commander ce produit*
 
 Produit : ${product.name}
 Taille : ${selectedSize}
 Couleur : ${selectedColor}
-Quantité : 1
-
-
-Lien produit : ${product.image_url}
 
 Merci !
     `;
 
-    const link = getWhatsAppLink(message);
-    window.open(link, '_blank');
+    window.open(getWhatsAppLink(message), '_blank');
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid md:grid-cols-2 gap-12">
+    <div className="min-h-screen bg-white px-4 py-6">
+      <div className="max-w-5xl mx-auto">
+        
+        {/* GRID RESPONSIVE */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
           {/* IMAGE */}
-          <div className="relative aspect-square bg-gray-200 rounded-lg overflow-hidden">
-            <Image
-              src={product.image_url}
-              alt={product.name}
-              fill
-              className="object-cover"
-            />
+          <div className="w-full max-w-md mx-auto">
+            <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-200">
+              <Image
+                src={product.image_url}
+                alt={product.name}
+                fill
+                className="object-contain md:object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </div>
           </div>
 
           {/* DETAILS */}
-          <div>
-            <h1 className="text-3xl font-bold">{product.name}</h1>
+          <div className="w-full">
 
-            <p className="text-emerald-600 text-xl font-bold mt-2">
+            <h1 className="text-xl md:text-3xl font-bold">
+              {product.name}
+            </h1>
+
+            <p className="text-emerald-600 text-lg md:text-xl font-bold mt-2">
               {formatPrice(price)}
             </p>
 
-            <p className="text-gray-600 mt-4">
+            <p className="text-gray-600 mt-4 text-sm md:text-base">
               {product.description}
             </p>
 
             {/* SIZE */}
             <div className="mt-6">
               <h3 className="font-semibold mb-2">Taille</h3>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {['S', 'M', 'L', 'XL'].map((size) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-2 border rounded-lg ${
+                    className={`px-3 py-2 border rounded-lg text-sm ${
                       selectedSize === size
                         ? 'bg-black text-white'
                         : ''
@@ -191,12 +174,12 @@ Merci !
             {/* COLOR */}
             <div className="mt-6">
               <h3 className="font-semibold mb-2">Couleur</h3>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {['Noir', 'Blanc', 'Bleu'].map((color) => (
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
-                    className={`px-4 py-2 border rounded-lg ${
+                    className={`px-3 py-2 border rounded-lg text-sm ${
                       selectedColor === color
                         ? 'bg-black text-white'
                         : ''
@@ -208,17 +191,15 @@ Merci !
               </div>
             </div>
 
-            {/* BUTTON */}
-            <div className="flex gap-4 mt-8">
+            {/* BUTTONS MOBILE SAFE */}
+            <div className="flex flex-col sm:flex-row gap-3 mt-8">
 
               <button
                 onClick={handleAddToCart}
                 disabled={isSoldOut}
-                className={`flex-1 px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition ${
+                className={`w-full sm:flex-1 px-4 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 text-sm ${
                   showAddedMessage
-                    ? isEditingFromCart 
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-emerald-600 text-white'
+                    ? 'bg-emerald-600 text-white'
                     : isEditingFromCart
                     ? 'bg-orange-600 hover:bg-orange-700 text-white'
                     : 'bg-blue-600 hover:bg-blue-700 text-white'
@@ -227,12 +208,12 @@ Merci !
                 {showAddedMessage ? (
                   <>
                     <Check className="w-5 h-5" />
-                    {isEditingFromCart ? 'Mise à jour...' : 'Ajouté au panier !'}
+                    Ajouté !
                   </>
                 ) : (
                   <>
                     <ShoppingBag className="w-5 h-5" />
-                    {isEditingFromCart ? 'Mettre à jour' : 'Ajouter au panier'}
+                    Ajouter
                   </>
                 )}
               </button>
@@ -240,20 +221,18 @@ Merci !
               <button
                 onClick={handleWhatsApp}
                 disabled={isSoldOut}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold"
+                className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-semibold text-sm"
               >
                 Commander
               </button>
 
               <button
                 onClick={() => setIsFavorite(!isFavorite)}
-                className="border px-4 py-3 rounded-lg hover:bg-gray-100 transition"
+                className="w-12 h-12 flex items-center justify-center border rounded-lg hover:bg-gray-100"
               >
                 <Heart
                   className={`w-5 h-5 ${
-                    isFavorite
-                      ? 'text-red-500 fill-red-500'
-                      : ''
+                    isFavorite ? 'text-red-500 fill-red-500' : ''
                   }`}
                 />
               </button>
@@ -261,7 +240,6 @@ Merci !
             </div>
 
           </div>
-
         </div>
       </div>
     </div>

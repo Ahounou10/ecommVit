@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Heart, ShoppingBag } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 import { useState } from 'react';
 import { formatPrice, getDiscountedPrice } from '@/lib/utils';
 import type { Product } from '@/types';
@@ -19,7 +19,6 @@ type CartItem = {
 };
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
   if (!product) return null;
@@ -104,23 +103,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             )}
 
             {/* DESKTOP */}
-            <div className="hidden sm:flex absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition items-end justify-between p-4">
-
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsFavorite(!isFavorite);
-                }}
-                className="bg-white p-2 rounded-full"
-              >
-                <Heart
-                  className={
-                    isFavorite
-                      ? 'text-red-500 fill-red-500'
-                      : ''
-                  }
-                />
-              </button>
+            <div className="hidden sm:flex absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition items-end justify-end p-4">
 
               <button
                 onClick={(e) => {
@@ -135,23 +118,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
 
             {/* MOBILE */}
-            <div className="sm:hidden absolute bottom-2 right-2 flex gap-2">
-
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsFavorite(!isFavorite);
-                }}
-                className="bg-white p-2 rounded-full shadow"
-              >
-                <Heart
-                  className={
-                    isFavorite
-                      ? 'text-red-500 fill-red-500'
-                      : ''
-                  }
-                />
-              </button>
+            <div className="sm:hidden absolute bottom-2 right-2">
 
               <button
                 onClick={(e) => {
