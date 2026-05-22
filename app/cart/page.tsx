@@ -80,6 +80,8 @@ export default function CartPage() {
             ? getDiscountedPrice(product.price, product.promo_percent)
             : product.price;
 
+          const cartImage = product.images?.[0] || product.image_url || '/placeholder.png';
+
           return (
             <div
               key={item.cartItemId}
@@ -88,7 +90,7 @@ export default function CartPage() {
               {/* IMAGE */}
               <div className="relative w-24 h-24 rounded overflow-hidden bg-gray-100">
                 <Image
-                  src={product.image_url}
+                  src={cartImage}
                   alt={product.name}
                   fill
                   className="object-cover"

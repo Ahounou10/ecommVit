@@ -28,6 +28,7 @@ export type CartItem = {
 // Format pour un seul produit (commande directe)
 export function formatWhatsAppMessage(item: CartItem): string {
   const product = item.product;
+  const productImage = product.images?.[0] || product.image_url;
 
   return ` *Commande produit*
 Bonjour, je souhaite commander ce produit :
@@ -36,7 +37,7 @@ Bonjour, je souhaite commander ce produit :
  Couleur : ${item.color || 'Non précisé'}
  Quantité : ${item.quantity}
  
- Image : ${product.image_url}
+ Image : ${productImage}
 
 Merci `;
 }
@@ -46,6 +47,7 @@ export function formatCartWhatsAppMessage(items: CartItem[]): string {
   const productsList = items
     .map((item, index) => {
       const product = item.product;
+      const productImage = product.images?.[0] || product.image_url;
 
       return `Produit ${index + 1}
 
@@ -58,7 +60,7 @@ export function formatCartWhatsAppMessage(items: CartItem[]): string {
  Quantité : ${item.quantity}
 
  Image :
-${product.image_url}`;
+${productImage}`;
     })
     .join('\n\n━━━━━━━━━━━━━━\n\n');
 

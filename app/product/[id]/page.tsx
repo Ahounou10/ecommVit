@@ -33,6 +33,7 @@ export default function ProductPage({
   const [isLoading, setIsLoading] = useState(true);
   const [showAddedMessage, setShowAddedMessage] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   const isEditingFromCart = cartItemId !== null;
   const supabase = createClient();
@@ -93,6 +94,21 @@ export default function ProductPage({
   const price = getDiscountedPrice(product.price, product.promo_percent);
   const isSoldOut = product.stock === 0;
 
+  // Récupère les images avec fallback sur image_url
+  const productImages = product.images && product.images.length > 0 
+    ? product.images 
+    : product.image_url ? [product.image_url] : [];
+  
+  const currentImage = productImages[selectedImageIndex] || productImages[0];
+  
+  if (!currentImage) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Image non disponible
+      </div>
+    );
+  }
+
   const handleAddToCart = () => {
     if (isEditingFromCart && cartItemId) {
       updateCartItemById(
@@ -135,20 +151,46 @@ Merci !
         {/* GRID RESPONSIVE */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-          {/* IMAGE */}
+          {/* IMAGE GALLERY */}
           <div className="w-full max-w-md mx-auto">
+            {/* MAIN IMAGE */}
             <div
               onClick={() => setShowImageModal(true)}
               className="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-200 cursor-pointer hover:shadow-lg transition-shadow"
             >
               <Image
-                src={product.image_url}
+                src={currentImage}
                 alt={product.name}
                 fill
-                className="object-contain md:object-cover"
+                className="object-contain"
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
             </div>
+
+            {/* THUMBNAILS */}
+            {productImages.length > 1 && (
+              <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+                {productImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImageIndex(idx)}
+                    className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition ${
+                      selectedImageIndex === idx
+                        ? 'border-black'
+                        : 'border-gray-300 hover:border-gray-400'
+                    }`}
+                  >
+                    <Image
+                      src={img}
+                      alt={`${product.name} - ${idx}`}
+                      width={64}
+                      height={64}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* DETAILS */}
@@ -255,7 +297,7 @@ Merci !
         >
           <div className="relative w-full h-full max-w-4xl max-h-4xl flex items-center justify-center">
             <Image
-              src={product.image_url}
+              src={currentImage}
               alt={product.name}
               fill
               className="object-contain"

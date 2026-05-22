@@ -3,7 +3,8 @@ export interface Product {
   name: string;
   price: number;
   description: string;
-  image_url: string;
+  image_url?: string;
+  images?: string[];
   category: 'homme' | 'femme' | 'mixte';
   subcategory: 'tshirts' | 'jeans' | 'robes' | 'chaussures';
   sizes: string[];

@@ -24,7 +24,7 @@ interface FormDataType {
   colors: string[];
   stock: string;
   promo_percent: string;
-  image_url: string;
+  images: string[];
 }
 
 interface ErrorLike {
@@ -72,10 +72,10 @@ export default function NewProductPage() {
     colors: [],
     stock: '',
     promo_percent: '0',
-    image_url: '',
+    images: [],
   });
 
-  const [imagePreview, setImagePreview] = useState('');
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isUploading, setIsUploading] = useState(false);
@@ -97,58 +97,69 @@ export default function NewProductPage() {
 
   const handleImageChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
 
       setError('');
       setSuccess('');
       setIsUploading(true);
 
       try {
-        const ext = file.name.split('.').pop()?.toLowerCase();
+        const uploadedUrls: string[] = [];
+        const newPreviews: string[] = [];
 
-        if (!ext || !['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
-          throw new Error(
-            'Format non autorisé. Utilisez JPG, JPEG, PNG ou WEBP.'
-          );
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const ext = file.name.split('.').pop()?.toLowerCase();
+
+          if (!ext || !['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
+            throw new Error(
+              `Image ${i + 1}: Format non autorisé. Utilisez JPG, JPEG, PNG ou WEBP.`
+            );
+          }
+
+          if (file.size > 5 * 1024 * 1024) {
+            throw new Error(`Image ${i + 1}: Fichier trop lourd. Maximum 5MB.`);
+          }
+
+          const localPreview = URL.createObjectURL(file);
+          newPreviews.push(localPreview);
+
+          const fileName = `${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2)}-${i}.${ext}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('products')
+            .upload(fileName, file, {
+              cacheControl: '3600',
+              upsert: false,
+            });
+
+          if (uploadError) throw uploadError;
+
+          const { data } = supabase.storage
+            .from('products')
+            .getPublicUrl(fileName);
+
+          uploadedUrls.push(data.publicUrl);
         }
 
-        if (file.size > 5 * 1024 * 1024) {
-          throw new Error('Image trop lourde. Maximum 5MB.');
-        }
-
-        const localPreview = URL.createObjectURL(file);
-        setImagePreview(localPreview);
-
-        const fileName = `${Date.now()}-${Math.random()
-          .toString(36)
-          .slice(2)}.${ext}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('products')
-          .upload(fileName, file, {
-            cacheControl: '3600',
-            upsert: false,
-          });
-
-        if (uploadError) throw uploadError;
-
-        const { data } = supabase.storage
-          .from('products')
-          .getPublicUrl(fileName);
-
+        setImagePreviews(newPreviews);
         setFormData((prev) => ({
           ...prev,
-          image_url: data.publicUrl,
+          images: uploadedUrls,
         }));
 
-        setSuccess('Image téléchargée avec succès.');
+        setSuccess(
+          `${files.length} image(s) téléchargée(s) avec succès.`
+        );
       } catch (err: unknown) {
         setError(getErrorMessage(err));
-        setImagePreview('');
+        setImagePreviews([]);
         setFormData((prev) => ({
           ...prev,
-          image_url: '',
+          images: [],
         }));
       } finally {
         setIsUploading(false);
@@ -195,8 +206,8 @@ export default function NewProductPage() {
           throw new Error('Le stock est invalide.');
         }
 
-        if (!formData.image_url) {
-          throw new Error('Veuillez ajouter une image.');
+        if (formData.images.length === 0) {
+          throw new Error('Veuillez ajouter au moins une image.');
         }
 
         if (formData.sizes.length === 0) {
@@ -229,7 +240,8 @@ export default function NewProductPage() {
           colors: formData.colors,
           stock: Number(formData.stock),
           promo_percent: Number(formData.promo_percent) || 0,
-          image_url: formData.image_url,
+          images: formData.images,
+          image_url: formData.images[0],
           is_active: true,
         };
 
@@ -275,40 +287,48 @@ export default function NewProductPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-7">
-          {/* IMAGE */}
+          {/* IMAGES */}
           <div>
             <label className="block font-semibold mb-3">
-              Image du produit
+              Images du produit (plusieurs)
             </label>
 
-            {imagePreview ? (
-              <div className="relative w-40 h-40 mb-4">
-                <Image
-                  src={imagePreview}
-                  alt="Preview"
-                  fill
-                  className="object-cover rounded-xl border"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setImagePreview('');
-                    setFormData((prev) => ({
-                      ...prev,
-                      image_url: '',
-                    }));
-                  }}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
-                >
-                  <X size={16} />
-                </button>
+            {imagePreviews.length > 0 ? (
+              <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {imagePreviews.map((preview, idx) => (
+                  <div key={idx} className="relative w-full aspect-square">
+                    <Image
+                      src={preview}
+                      alt={`Preview ${idx + 1}`}
+                      fill
+                      className="object-cover rounded-lg border"
+                    />
+                    <div className="absolute bottom-1 left-1 bg-black text-white text-xs px-2 py-1 rounded">
+                      {idx + 1}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newPreviews = imagePreviews.filter((_, i) => i !== idx);
+                        const newImages = formData.images.filter((_, i) => i !== idx);
+                        setImagePreviews(newPreviews);
+                        setFormData((prev) => ({
+                          ...prev,
+                          images: newImages,
+                        }));
+                      }}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="border-2 border-dashed rounded-xl p-8 text-center bg-gray-50">
                 <Upload className="mx-auto mb-2 text-emerald-600" />
                 <p className="text-sm text-gray-500">
-                  JPG / PNG / WEBP (5MB max)
+                  JPG / PNG / WEBP (5MB max par image)
                 </p>
               </div>
             )}
@@ -316,6 +336,7 @@ export default function NewProductPage() {
             <input
               type="file"
               accept="image/*"
+              multiple
               onChange={handleImageChange}
               disabled={isUploading}
               className="mt-4 block w-full text-sm"

@@ -23,6 +23,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   if (!product) return null;
 
+  // Récupère la première image avec fallback sur image_url
+  const productImage = product.images?.[0] || product.image_url;
+  
+  if (!productImage) return null;
+
   // valeurs par défaut depuis la boutique
   const defaultSize = 'M';
   const defaultColor = 'Noir';
@@ -90,7 +95,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* IMAGE */}
           <div className="relative h-48 bg-gray-200 overflow-hidden">
             <Image
-              src={product.image_url}
+              src={productImage}
               alt={product.name}
               fill
               className="object-cover"
