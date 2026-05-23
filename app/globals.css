@@ -5,11 +5,7 @@ html {
 }
 
 
-html,
-body {
 
-  overflow-x: hidden;
-}
 
 :root {
   --background: #f8fafc;
