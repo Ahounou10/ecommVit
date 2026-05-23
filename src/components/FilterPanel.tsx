@@ -1,7 +1,7 @@
 'use client';
 
 import { Search, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CATEGORIES, SUBCATEGORIES } from '@/lib/constants';
 
 export interface FilterState {
@@ -10,7 +10,7 @@ export interface FilterState {
   subcategory: string | null;
   priceRange: [number, number];
   sizes: string[];
-  colors: string[]; // ✅ AJOUT COULEURS
+  colors: string[];
 }
 
 interface FilterProps {
@@ -26,7 +26,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
     subcategory: null,
     priceRange: [0, 500000],
     sizes: [],
-    colors: [], // ✅ AJOUT
+    colors: [],
   });
 
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
@@ -42,7 +42,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
       subcategory: null,
       priceRange: [0, 500000],
       sizes: [],
-      colors: [], // ✅ AJOUT
+      colors: [],
     };
 
     setFilters(cleared);
@@ -53,17 +53,30 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
     filters.category,
     filters.subcategory,
     filters.sizes.length > 0 && `${filters.sizes.length} tailles`,
-    filters.colors.length > 0 && `${filters.colors.length} couleurs`, // ✅ AJOUT
+    filters.colors.length > 0 && `${filters.colors.length} couleurs`,
   ].filter(Boolean).length;
 
   const COLORS = ['Noir', 'Blanc', 'Bleu', 'Rouge', 'Vert'];
+
+  // 🔥 LOCK SCROLL MOBILE (important)
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   return (
     <>
       {/* MOBILE BUTTON */}
       <button
         onClick={() => setIsOpen(true)}
-        className="md:hidden flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 mb-6"
+        className="md:hidden flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 mb-6 relative z-10"
       >
         <Search className="w-4 h-4" />
         Filtrer {activeFilters > 0 && `(${activeFilters})`}
@@ -72,7 +85,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
       {/* BACKDROP */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/60 z-[9998] md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -81,9 +94,11 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
       <div
         className={`
           fixed md:relative top-0 left-0 h-full md:h-auto w-80 md:w-64
-          bg-white z-50 md:z-auto
+          bg-white
+          z-[9999] md:z-auto
           transform transition-transform duration-300
           ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+          shadow-2xl md:shadow-none
         `}
       >
         <div className="p-6 h-full overflow-y-auto relative">
@@ -91,7 +106,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
           {/* CLOSE */}
           <button
             onClick={() => setIsOpen(false)}
-            className="md:hidden absolute top-4 right-4"
+            className="md:hidden absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100"
           >
             <X className="w-5 h-5" />
           </button>
@@ -177,59 +192,32 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
             </div>
           </div>
 
-          {/* SIZES */}
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold mb-3">Tailles</h3>
+          {/* COLORS */}
+<div className="mb-6">
+  <h3 className="text-sm font-semibold mb-3">Couleurs</h3>
 
-            <div className="grid grid-cols-3 gap-2">
-              {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
-                <button
-                  key={size}
-                  onClick={() => {
-                    const updated = filters.sizes.includes(size)
-                      ? filters.sizes.filter((s) => s !== size)
-                      : [...filters.sizes, size];
+  <div className="grid grid-cols-2 gap-2">
+    {COLORS.map((color) => (
+      <button
+        key={color}
+        onClick={() => {
+          const updated = filters.colors.includes(color)
+            ? filters.colors.filter((c) => c !== color)
+            : [...filters.colors, color];
 
-                    handleFilterChange({ sizes: updated });
-                  }}
-                  className={`py-2 border rounded text-sm ${
-                    filters.sizes.includes(size)
-                      ? 'bg-emerald-600 text-white'
-                      : ''
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* COLORS ✅ AJOUTÉ */}
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold mb-3">Couleurs</h3>
-
-            <div className="grid grid-cols-2 gap-2">
-              {COLORS.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => {
-                    const updated = filters.colors.includes(color)
-                      ? filters.colors.filter((c) => c !== color)
-                      : [...filters.colors, color];
-
-                    handleFilterChange({ colors: updated });
-                  }}
-                  className={`py-2 border rounded text-sm ${
-                    filters.colors.includes(color)
-                      ? 'bg-black text-white'
-                      : ''
-                  }`}
-                >
-                  {color}
-                </button>
-              ))}
-            </div>
-          </div>
+          handleFilterChange({ colors: updated });
+        }}
+        className={`py-2 border rounded text-sm transition ${
+          filters.colors.includes(color)
+            ? 'bg-black text-white'
+            : 'bg-white hover:bg-gray-100'
+        }`}
+      >
+        {color}
+      </button>
+    ))}
+  </div>
+</div>
 
           {/* RESET */}
           {activeFilters > 0 && (

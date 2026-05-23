@@ -25,18 +25,24 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body className="bg-sky-50 text-slate-900">
+      <body className="bg-sky-50 text-slate-900 min-h-screen relative isolate">
 
-        {/* 🔥 PANIER GLOBAL ICI */}
         <CartProvider>
 
-          <Header />
+          {/* HEADER TOUJOURS AU-DESSUS */}
+          <div className="relative z-50">
+            <Header />
+          </div>
 
-          <main className="min-h-screen">
+          {/* CONTENU */}
+          <main className="min-h-screen relative z-0">
             {children}
           </main>
 
-          <Footer />
+          {/* FOOTER */}
+          <div className="relative z-10">
+            <Footer />
+          </div>
 
         </CartProvider>
 

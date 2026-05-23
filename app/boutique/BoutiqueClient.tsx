@@ -2,10 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import ProductGrid from '@/components/ProductGrid';
-import FilterPanel, {
-  type FilterState,
-} from '@/components/FilterPanel';
-
+import FilterPanel, { type FilterState } from '@/components/FilterPanel';
 import { createClient } from '@/supabase/client';
 import type { Product } from '@/types';
 
@@ -28,7 +25,6 @@ export default function BoutiqueClient({
     colors: [],
   });
 
-  // 🔥 FETCH PRODUCTS
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -37,22 +33,16 @@ export default function BoutiqueClient({
         const { data, error } = await supabase
           .from('products')
           .select('*')
-          .order('created_at', {
-            ascending: false,
-          });
+          .order('created_at', { ascending: false });
 
         if (error) {
-          console.error(
-            'Erreur récupération produits:',
-            error
-          );
-
+          console.error(error);
           return;
         }
 
         setProducts(data || []);
-      } catch (error) {
-        console.error('Erreur:', error);
+      } catch (e) {
+        console.error(e);
       } finally {
         setIsLoading(false);
       }
@@ -61,39 +51,26 @@ export default function BoutiqueClient({
     fetchProducts();
   }, []);
 
-  // 🔥 FILTER PRODUCTS
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
 
-    // SEARCH
     if (filters.search) {
       filtered = filtered.filter((p) =>
-        p.name
-          .toLowerCase()
-          .includes(filters.search.toLowerCase())
+        p.name.toLowerCase().includes(filters.search.toLowerCase())
       );
     }
 
-    // CATEGORY
     if (filters.category) {
-      filtered = filtered.filter(
-        (p) => p.category === filters.category
-      );
+      filtered = filtered.filter((p) => p.category === filters.category);
     }
 
-    // SUBCATEGORY
     if (filters.subcategory) {
-      filtered = filtered.filter(
-        (p) =>
-          p.subcategory === filters.subcategory
-      );
+      filtered = filtered.filter((p) => p.subcategory === filters.subcategory);
     }
 
-    // PRICE
     filtered = filtered.filter((p) => {
       const finalPrice = p.promo_percent
-        ? p.price *
-          (1 - p.promo_percent / 100)
+        ? p.price * (1 - p.promo_percent / 100)
         : p.price;
 
       return (
@@ -102,21 +79,15 @@ export default function BoutiqueClient({
       );
     });
 
-    // SIZES
     if (filters.sizes.length > 0) {
       filtered = filtered.filter((p) =>
-        filters.sizes.some((size) =>
-          p.sizes?.includes(size)
-        )
+        filters.sizes.some((size) => p.sizes?.includes(size))
       );
     }
 
-    // COLORS
     if (filters.colors.length > 0) {
       filtered = filtered.filter((p) =>
-        filters.colors.some((color) =>
-          p.colors?.includes(color)
-        )
+        filters.colors.some((color) => p.colors?.includes(color))
       );
     }
 
@@ -124,59 +95,52 @@ export default function BoutiqueClient({
   }, [products, filters]);
 
   return (
-    <section className="relative">
-      {/* BACKGROUND GLOW */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-100/30 rounded-full blur-3xl" />
+    <div className="relative min-h-screen">
 
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-100/20 rounded-full blur-3xl" />
+      {/* BACKGROUND */}
+      <div className="absolute inset-0 pointer-events-none -z-10">
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-100/30 blur-3xl rounded-full" />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-teal-100/20 blur-3xl rounded-full" />
       </div>
 
-      <div className="relative flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col md:flex-row gap-6">
 
         {/* SIDEBAR */}
-        <aside className="lg:w-72 shrink-0">
-          <div className="sticky top-24 rounded-3xl border border-white/30 bg-white/70 backdrop-blur-xl p-5 shadow-lg shadow-slate-200/40">
-            <FilterPanel
-              onFilterChange={setFilters}
-            />
+        <aside className="
+          md:w-72
+          w-full
+          md:sticky md:top-24
+          z-30
+        ">
+          <div className="
+           
+            border border-gray-200
+            rounded-2xl
+            p-4
+            shadow-lg
+          ">
+            <FilterPanel onFilterChange={setFilters} />
           </div>
+          
         </aside>
 
         {/* CONTENT */}
-        <div className="flex-1 min-w-0">
+        <main className="flex-1 min-w-0 z-0">
 
-          {/* HEADER */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div className="flex justify-between items-center mb-6">
+           
 
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900">
-                Boutique
-              </h1>
-
-              <p className="text-slate-500 mt-1">
-                Découvrez notre collection
-                exclusive.
-              </p>
-            </div>
-
-            <div className="inline-flex items-center px-4 py-2 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200 text-slate-700 font-medium shadow-sm">
-              {filteredProducts.length} produit
-              {filteredProducts.length > 1
-                ? 's'
-                : ''}
+            <div className="text-sm bg-white px-3 py-1 rounded-full border">
+              {filteredProducts.length} produits
             </div>
           </div>
 
-          {/* PRODUCTS */}
-          <div className="rounded-3xl">
-            <ProductGrid
-              products={filteredProducts}
-              isLoading={isLoading}
-            />
-          </div>
-        </div>
+          <ProductGrid
+            products={filteredProducts}
+            isLoading={isLoading}
+          />
+        </main>
       </div>
-    </section>
+    </div>
   );
 }
