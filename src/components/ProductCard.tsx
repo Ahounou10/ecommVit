@@ -77,7 +77,8 @@ export default function ProductCard({ product }: ProductCardProps) {
       localStorage.setItem('cart', JSON.stringify(cart));
     }
 
-    showToast('Produit ajouté au panier');
+    showToast('');
+    window.dispatchEvent(new Event('cartUpdated'));
   }
 
   const discountedPrice = getDiscountedPrice(
@@ -90,7 +91,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <>
       <Link href={`/product/${product.id}`}>
-        <div className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1 border border-gray-100">
+        <div className="group bg-gradient-to-br from-white to-amber-50 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1 border border-amber-100">
 
           {/* IMAGE */}
           <div className="relative h-48 bg-gray-200 overflow-hidden">

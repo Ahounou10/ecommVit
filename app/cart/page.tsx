@@ -62,7 +62,7 @@ export default function CartPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 sm:py-24">
         <h1 className="text-4xl font-bold mb-6 text-gray-900">Mon Panier</h1>
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-12 text-center border-2 border-dashed border-blue-200">
+        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-12 text-center border-2 border-dashed border-amber-200">
           <p className="text-lg text-gray-600 mb-6">Ton panier est vide</p>
           <a href="/boutique" className="inline-block bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg">
             Continuer tes achats →
@@ -96,7 +96,7 @@ export default function CartPage() {
               className="bg-white rounded-xl shadow-md hover:shadow-lg border border-gray-100 p-4 sm:p-6 flex gap-4 items-start sm:items-center transition-all duration-300"
             >
               {/* IMAGE */}
-              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex-shrink-0">
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-gradient-to-br from-amber-100 to-orange-100 flex-shrink-0">
                 <Image
                   src={cartImage}
                   alt={product.name}
@@ -153,7 +153,7 @@ export default function CartPage() {
       </div>
 
       {/* TOTAL */}
-      <div className="mt-10 bg-gradient-to-br from-emerald-50 to-blue-50 rounded-2xl shadow-lg p-6 sm:p-8 border border-emerald-100">
+      <div className="mt-10 bg-gradient-to-br from-amber-50 to-orange-100 rounded-2xl shadow-lg p-6 sm:p-8 border border-amber-200">
         <div className="flex justify-between items-center mb-8">
           <span className="text-2xl font-bold text-gray-900">Total :</span>
           <span className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">{formatPrice(total)}</span>

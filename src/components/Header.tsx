@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingBag, Search, Menu, X } from 'lucide-react';
+import { ShoppingBag, Menu, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 // Type propre du panier
 type CartItem = {
@@ -13,11 +12,9 @@ type CartItem = {
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
 
   const searchInput = useRef<HTMLInputElement | null>(null);
-  const router = useRouter();
 
   //  lecture panier (safe + typé)
   const getCartCount = (): number => {
@@ -71,10 +68,10 @@ useEffect(() => {
 
   // 🔥 focus search
   useEffect(() => {
-    if (isSearchOpen) {
+    if (searchInput.current && typeof searchInput !== 'undefined') {
       setTimeout(() => searchInput.current?.focus(), 50);
     }
-  }, [isSearchOpen]);
+  }, []);
 
   const navLinks = [
     { href: '/', label: 'Accueil' },
@@ -84,7 +81,7 @@ useEffect(() => {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-gradient-to-r from-white via-blue-50 to-white border-b border-gray-100 shadow-sm">
+    <header className="sticky top-0 z-50 bg-gradient-to-r from-white via-amber-50 to-white border-b border-amber-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
 
         {/* LOGO */}

@@ -8,7 +8,7 @@ export default function Home() {
       <HeroBanner />
       
       {/* Nouveautés Section */}
-      <section id="nouveautes" className="py-16 sm:py-24 md:py-32 bg-gradient-to-br from-white via-blue-50 to-emerald-50">
+      <section id="nouveautes" className="py-16 sm:py-24 md:py-32 bg-gradient-to-br from-white via-amber-50 to-orange-50 border-t border-amber-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-800 bg-clip-text text-transparent mb-4 sm:mb-6">
@@ -31,7 +31,7 @@ export default function Home() {
       <Features />
 
       {/* CTA Section */}
-      <section className="py-16 sm:py-24 md:py-32 bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 text-white relative overflow-hidden">
+      <section className="py-16 sm:py-24 md:py-32 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 text-white relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 -left-4 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-3xl"></div>
