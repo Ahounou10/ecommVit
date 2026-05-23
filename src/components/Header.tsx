@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ShoppingBag, Menu, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import Toast from '@/components/Toast';
 
 // Type propre du panier
 type CartItem = {
@@ -34,26 +35,12 @@ export default function Header() {
   };
 
   // 🔥 update UI
-  const updateCart = () => {
-    setCartCount(getCartCount());
-  };
+  // 🔥 update UI (useEffect gère la sync)
 
   // 🔥 sync + listeners
-  type CartItem = {
-  cartItemId: string;
-  quantity: number;
-};
-
 useEffect(() => {
   const updateCart = () => {
-    const cart: CartItem[] = JSON.parse(
-      localStorage.getItem('cart') || '[]'
-    );
-
-    const count = cart.reduce((sum: number, item: CartItem) => {
-      return sum + (item.quantity || 1);
-    }, 0);
-
+    const count = getCartCount();
     setCartCount(count);
   };
 
@@ -81,6 +68,7 @@ useEffect(() => {
   ];
 
   return (
+    <>
     <header className="sticky top-0 z-50 bg-gradient-to-r from-white via-amber-50 to-white border-b border-amber-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
 
@@ -150,5 +138,7 @@ useEffect(() => {
         </div>
       )}
     </header>
+    <Toast />
+    </>
   );
 }

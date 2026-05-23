@@ -27,8 +27,10 @@ export default function CartPage() {
   function removeItem(cartItemId: string) {
   removeCartItemById(cartItemId);
   setCart(getCart());
-
   window.dispatchEvent(new Event('cartUpdated'));
+  window.dispatchEvent(new CustomEvent('showToast', {
+    detail: { message: 'Produit supprimé du panier', type: 'info', duration: 2200 },
+  }));
 }
 
   // ✅ modifier UN item précis

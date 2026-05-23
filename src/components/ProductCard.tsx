@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { ShoppingBag } from 'lucide-react';
-import { useState } from 'react';
+// pas d'état local ici — toasts gérés globalement
 import { formatPrice, getDiscountedPrice } from '@/lib/utils';
 import type { Product } from '@/types';
 import Link from 'next/link';
@@ -19,8 +19,6 @@ type CartItem = {
 };
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const [toast, setToast] = useState<string | null>(null);
-
   if (!product) return null;
 
   // Récupère la première image avec fallback sur image_url
@@ -32,10 +30,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const defaultSize = 'M';
   const defaultColor = 'Noir';
 
-  function showToast(message: string) {
-    setToast(message);
-    setTimeout(() => setToast(null), 2000);
-  }
+  // Remarque: toasts globaux gérés par le composant `Toast` via l'événement `showToast`
 
   function addToCart(product: Product) {
     if (typeof window === 'undefined') return;
@@ -77,7 +72,10 @@ export default function ProductCard({ product }: ProductCardProps) {
       localStorage.setItem('cart', JSON.stringify(cart));
     }
 
-    showToast('');
+    window.dispatchEvent(new CustomEvent('showToast', {
+      detail: { message: 'Produit ajouté au panier', type: 'success', duration: 2500 },
+    }));
+
     window.dispatchEvent(new Event('cartUpdated'));
   }
 
@@ -160,12 +158,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </Link>
 
-      {/* TOAST */}
-      {toast && (
-        <div className="fixed top-4 right-4 bg-gradient-to-r from-gray-900 to-gray-800 text-white px-4 py-3 rounded-lg shadow-xl z-50 border border-gray-700 font-medium">
-          ✓ {toast}
-        </div>
-      )}
+      {/* Utilise le toast global (composant Toast monté dans Header) */}
     </>
   );
 }
