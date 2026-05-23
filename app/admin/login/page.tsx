@@ -21,6 +21,8 @@ export default function AdminLoginPage() {
     }
   };
 
+  
+
    useEffect(() => {
     checkAuth();
   }, []);
@@ -29,6 +31,8 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+
+   
 
     try {
       const { error } = await supabase.auth.signInWithPassword({

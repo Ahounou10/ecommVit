@@ -90,7 +90,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <>
       <Link href={`/product/${product.id}`}>
-        <div className="group bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition cursor-pointer">
+        <div className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1 border border-gray-100">
 
           {/* IMAGE */}
           <div className="relative h-48 bg-gray-200 overflow-hidden">
@@ -98,77 +98,71 @@ export default function ProductCard({ product }: ProductCardProps) {
               src={productImage}
               alt={product.name}
               fill
-              className="object-cover"
+              className="object-cover group-hover:scale-110 transition-transform duration-500"
             />
 
             {discount && (
-              <div className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full">
+              <div className="absolute top-3 right-3 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full shadow-md font-semibold text-sm">
                 -{product.promo_percent}%
               </div>
             )}
 
             {/* DESKTOP */}
-            <div className="hidden sm:flex absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition items-end justify-end p-4">
-
+            <div className="hidden sm:flex absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-end justify-end p-4">
               <button
                 onClick={(e) => {
                   e.preventDefault();
                   addToCart(product);
                 }}
-                className="bg-emerald-600 text-white p-2 rounded-full"
+                className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white p-2 rounded-full shadow-lg transform hover:scale-110 transition-all duration-200"
               >
                 <ShoppingBag className="w-5 h-5" />
               </button>
-
             </div>
 
             {/* MOBILE */}
             <div className="sm:hidden absolute bottom-2 right-2">
-
               <button
                 onClick={(e) => {
                   e.preventDefault();
                   addToCart(product);
                 }}
-                className="bg-emerald-600 text-white p-2 rounded-full shadow"
+                className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-2 rounded-full shadow-lg transform active:scale-95 transition-all duration-200"
               >
                 <ShoppingBag className="w-5 h-5" />
               </button>
-
             </div>
           </div>
 
           {/* INFO */}
           <div className="p-4">
-            <h3 className="font-semibold">{product.name}</h3>
+            <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-emerald-600 transition-colors">{product.name}</h3>
 
-            <div className="mt-2 flex items-center gap-2 flex-wrap">
+            <div className="mt-3 flex items-center gap-2 flex-wrap">
+              {/* Nouveau prix */}
+              <span className="text-emerald-600 font-bold text-lg">
+                {formatPrice(
+                  discount
+                    ? discountedPrice
+                    : product.price
+                )}
+              </span>
 
-  {/* Nouveau prix */}
-  <span className="text-emerald-600 font-bold text-lg">
-    {formatPrice(
-      discount
-        ? discountedPrice
-        : product.price
-    )}
-  </span>
-
-  {/* Ancien prix */}
-  {discount && (
-    <span className="text-sm text-gray-400 line-through">
-      {formatPrice(product.price)}
-    </span>
-  )}
-
-</div>
+              {/* Ancien prix */}
+              {discount && (
+                <span className="text-sm text-gray-400 line-through">
+                  {formatPrice(product.price)}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </Link>
 
       {/* TOAST */}
       {toast && (
-        <div className="fixed top-4 right-4 bg-black text-white px-4 py-2 rounded-lg shadow-lg z-50">
-          {toast}
+        <div className="fixed top-4 right-4 bg-gradient-to-r from-gray-900 to-gray-800 text-white px-4 py-3 rounded-lg shadow-xl z-50 border border-gray-700 font-medium">
+          ✓ {toast}
         </div>
       )}
     </>
