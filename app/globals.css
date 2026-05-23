@@ -8,6 +8,13 @@ html {
   outline : 1px solid red;
 }
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
