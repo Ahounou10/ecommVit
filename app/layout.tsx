@@ -25,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body className="bg-white text-gray-900">
+      <body className="bg-sky-50 text-slate-900">
 
         {/* 🔥 PANIER GLOBAL ICI */}
         <CartProvider>

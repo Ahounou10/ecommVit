@@ -1,99 +1,156 @@
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero */}
-      <div className="bg-gradient-to-br from-gray-950 to-emerald-950 text-white py-8 sm:py-16 md:py-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 sm:mb-4">À propos de nous</h1>
-          <p className="text-base sm:text-lg md:text-xl text-gray-300">
-            Votre boutique de vêtements premium en ligne
+    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white">
+
+      {/* HERO */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-gray-950 via-emerald-950 to-black text-white py-16 sm:py-24 md:py-32">
+
+        {/* glow background */}
+        <div className="absolute -top-20 -left-20 w-72 h-72 bg-emerald-500/20 blur-3xl rounded-full" />
+        <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-emerald-400/10 blur-3xl rounded-full" />
+
+        <div className="max-w-4xl mx-auto px-4 text-center relative">
+
+          <h1 className="text-2xl sm:text-2xl md:text-4xl font-black mb-4">
+            À propos de nous
+          </h1>
+
+          <p className="text-gray-300 text-base sm:text-lg md:text-xl">
+            Une boutique moderne pensée pour ton style, ton confort et ta confiance 
           </p>
+
         </div>
       </div>
 
-      {/* Story */}
-      <div className="py-8 sm:py-16 md:py-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Notre Histoire</h2>
-          <div className="space-y-3 sm:space-y-4 text-sm sm:text-base text-gray-700 leading-relaxed mb-8 sm:mb-12">
+      {/* STORY */}
+      <div className="py-16 sm:py-24">
+        <div className="max-w-4xl mx-auto px-4">
+
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">
+            Notre histoire
+          </h2>
+
+          <div className="space-y-5 text-gray-600 leading-relaxed text-base sm:text-lg">
+
             <p>
-              Bienvenue chez Boutique Vêtements, votre destination privilégiée pour les vêtements de qualité 
-              en Côte d'Ivoire. Fondée avec la passion de rendre la mode accessible à tous, nous nous engageons 
-              à offrir des articles tendance et de qualité supérieure.
+              Bienvenue chez Boutique Vêtements, une boutique née avec une idée simple :
+              rendre la mode accessible, stylée et facile à commander.
             </p>
+
             <p>
-              Notre mission est simple : vous fournir des vêtements modernes, élégants et confortables, 
-              tout en rendant votre expérience d'achat aussi facile que possible. Grâce à notre plateforme 
-              intuitive, vous pouvez parcourir notre collection et commander directement via WhatsApp.
+              Ici, pas de complication. Tu choisis, tu ajoutes au panier, et tu commandes directement via WhatsApp.
             </p>
+
             <p>
-              Nous croyons que la qualité ne doit pas être compromise par la commodité. C'est pourquoi nous 
-              sélectionnons chaque article avec soin pour vous offrir le meilleur.
+              On sélectionne chaque article avec soin pour garantir un bon équilibre entre qualité, style et prix.
             </p>
+
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
-            <div className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold text-emerald-600 mb-2">1000+</div>
-              <p className="text-gray-600 text-sm sm:text-base">Clients satisfaits</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold text-emerald-600 mb-2">500+</div>
-              <p className="text-gray-600 text-sm sm:text-base">Produits en stock</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold text-emerald-600 mb-2">24/7</div>
-              <p className="text-gray-600 text-sm sm:text-base">Service client</p>
-            </div>
+          {/* STATS */}
+          <div className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-6">
+
+            {[
+              { value: "1000+", label: "Clients satisfaits" },
+              { value: "500+", label: "Produits disponibles" },
+              { value: "24/7", label: "Support client" },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 text-center hover:shadow-xl transition"
+              >
+                <div className="text-4xl font-black text-emerald-600">
+                  {item.value}
+                </div>
+                <p className="text-gray-600 mt-2">
+                  {item.label}
+                </p>
+              </div>
+            ))}
+
           </div>
+
         </div>
       </div>
 
-      {/* Values */}
-      <div className="py-8 sm:py-16 md:py-24 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8 sm:mb-12 text-center">Nos Valeurs</h2>
+      {/* VALUES */}
+      <div className="py-16 sm:py-24 bg-gradient-to-b from-gray-50 to-white">
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
-            <div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">Qualité</h3>
-              <p className="text-gray-600 text-sm sm:text-base">
-                Chaque vêtement est sélectionné avec soin pour assurer votre satisfaction et votre confort.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">Accessibilité</h3>
-              <p className="text-gray-600 text-sm sm:text-base">
-                Des prix justes et une expérience d'achat simple, même sans compétences technologiques.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">Confiance</h3>
-              <p className="text-gray-600 text-sm sm:text-base">
-                Transparence totale dans nos produits et nos services. Votre confiance est notre priorité.
-              </p>
-            </div>
+        <div className="max-w-5xl mx-auto px-4">
+
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+            Nos valeurs
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+
+            {[
+              {
+                title: "Qualité",
+                desc: "Chaque produit est sélectionné avec soin pour garantir confort et style."
+              },
+              {
+                title: "Accessibilité",
+                desc: "Une expérience simple, rapide et pensée pour tous."
+              },
+              {
+                title: "Confiance",
+                desc: "Transparence et sérieux dans chaque commande."
+              },
+            ].map((v, i) => (
+              <div
+                key={i}
+                className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition"
+              >
+                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  {v.title}
+                </h3>
+                <p className="text-gray-600">
+                  {v.desc}
+                </p>
+              </div>
+            ))}
+
           </div>
+
         </div>
       </div>
 
       {/* CTA */}
-      <div className="py-16 md:py-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            Rejoignez notre communauté
+      <div className="py-20">
+
+        <div className="max-w-4xl mx-auto px-4 text-center">
+
+          <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4">
+            Rejoins la boutique 
           </h2>
-          <p className="text-lg text-gray-600 mb-8">
-            Découvrez nos derniers articles et profitez de nos promotions exclusives
+
+          <p className="text-gray-600 mb-8">
+            Découvre nos collections et trouve ton style dès maintenant.
           </p>
+
           <a
             href="/boutique"
-            className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-lg font-bold transition-all transform hover:scale-105"
+            className="
+              inline-block
+              bg-gradient-to-r
+              from-emerald-500
+              to-emerald-600
+              text-white
+              px-10 py-4
+              rounded-2xl
+              font-bold
+              shadow-lg
+              hover:scale-105
+              transition
+            "
           >
-            Parcourir la boutique
+            Voir la boutique →
           </a>
+
         </div>
       </div>
+
     </div>
   );
 }
