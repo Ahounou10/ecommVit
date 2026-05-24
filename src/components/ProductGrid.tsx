@@ -29,14 +29,13 @@ export default function ProductGrid({
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 items-stretch">
       {products
         .filter((product) => product && product.id)
         .map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-          />
+          <div key={product.id} className="h-full">
+            <ProductCard product={product} />
+          </div>
         ))}
     </div>
   );

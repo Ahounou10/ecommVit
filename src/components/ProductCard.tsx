@@ -23,7 +23,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   // Récupère la première image avec fallback sur image_url
   const productImage = product.images?.[0] || product.image_url;
-  
+
   if (!productImage) return null;
 
   // valeurs par défaut depuis la boutique
@@ -72,9 +72,15 @@ export default function ProductCard({ product }: ProductCardProps) {
       localStorage.setItem('cart', JSON.stringify(cart));
     }
 
-    window.dispatchEvent(new CustomEvent('showToast', {
-      detail: { message: 'Produit ajouté au panier', type: 'success', duration: 2500 },
-    }));
+    window.dispatchEvent(
+      new CustomEvent('showToast', {
+        detail: {
+          message: 'Produit ajouté au panier',
+          type: 'success',
+          duration: 2500,
+        },
+      })
+    );
 
     window.dispatchEvent(new Event('cartUpdated'));
   }
@@ -88,11 +94,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <>
-      <Link href={`/product/${product.id}`}>
-        <div className="group bg-gradient-to-br from-white to-amber-50 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1 border border-amber-100">
+      <Link href={`/product/${product.id}`} className="h-full">
+        <div className="group h-full flex flex-col bg-gradient-to-br from-white to-amber-50 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1 border border-amber-100">
 
           {/* IMAGE */}
-          <div className="relative h-48 bg-gray-200 overflow-hidden">
+          <div className="relative h-48 bg-gray-200 overflow-hidden flex-shrink-0">
             <Image
               src={productImage}
               alt={product.name}
@@ -134,10 +140,16 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* INFO */}
-          <div className="p-4">
-            <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-emerald-600 transition-colors">{product.name}</h3>
+          <div className="p-4 flex flex-col flex-1">
 
-            <div className="mt-3 flex items-center gap-2 flex-wrap">
+            {/* NOM PRODUIT */}
+            <h3 className="font-semibold text-gray-900 line-clamp-2 min-h-[48px] group-hover:text-emerald-600 transition-colors">
+              {product.name}
+            </h3>
+
+            {/* PRIX */}
+            <div className="mt-auto pt-3 flex items-center gap-2 flex-wrap">
+
               {/* Nouveau prix */}
               <span className="text-emerald-600 font-bold text-lg">
                 {formatPrice(
