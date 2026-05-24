@@ -111,6 +111,7 @@ export default function BoutiqueClient({
           w-full
           md:sticky md:top-24
           z-30
+          
         ">
           <div className="
            
@@ -118,6 +119,8 @@ export default function BoutiqueClient({
             rounded-2xl
             p-4
             shadow-lg
+        
+          
           ">
             <FilterPanel onFilterChange={setFilters} />
           </div>

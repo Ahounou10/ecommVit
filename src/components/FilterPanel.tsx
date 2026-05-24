@@ -17,6 +17,9 @@ interface FilterProps {
   onFilterChange?: (filters: FilterState) => void;
 }
 
+const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+const COLORS = ['Noir', 'Blanc', 'Bleu', 'Rouge', 'Vert'];
+
 export default function FilterPanel({ onFilterChange }: FilterProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -56,18 +59,19 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
     filters.colors.length > 0 && `${filters.colors.length} couleurs`,
   ].filter(Boolean).length;
 
-  const COLORS = ['Noir', 'Blanc', 'Bleu', 'Rouge', 'Vert'];
-
-  // 🔥 LOCK SCROLL MOBILE (important)
+  // 🔒 BLOQUE SCROLL BACKGROUND
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     }
 
     return () => {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     };
   }, [isOpen]);
 
@@ -76,7 +80,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
       {/* MOBILE BUTTON */}
       <button
         onClick={() => setIsOpen(true)}
-        className="md:hidden flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 mb-6 relative z-10"
+        className="md:hidden flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 mb-6"
       >
         <Search className="w-4 h-4" />
         Filtrer {activeFilters > 0 && `(${activeFilters})`}
@@ -93,140 +97,193 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
       {/* PANEL */}
       <div
         className={`
-          fixed md:relative top-0 left-0 h-full md:h-auto w-80 md:w-64
+          fixed md:relative
+          top-0 left-0
+          h-screen md:h-auto
+          w-80 md:w-64
           bg-white
-          z-[9999] md:z-auto
-          transform transition-transform duration-300
-          ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+          z-[9999]
           shadow-2xl md:shadow-none
+          transition-transform duration-300
+          ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
       >
-        <div className="p-6 h-full overflow-y-auto relative">
+        {/* FLEX LAYOUT PROPRE */}
+        <div className="h-full flex flex-col ">
 
-          {/* CLOSE */}
-          <button
-            onClick={() => setIsOpen(false)}
-            className="md:hidden absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {/* SCROLL CONTENT */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 ">
 
-          <h2 className="text-lg font-bold mb-6">Filtres</h2>
+            {/* CLOSE */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="md:hidden absolute top-4 right-4 p-2 rounded-full bg-white shadow hover:bg-gray-100 top-17 "
+            >
+              <X className="w-5 h-5" />
+            </button>
 
-          {/* SEARCH */}
-          <div className="mb-6">
-            <label className="text-sm font-medium">Rechercher</label>
+            <h2 className="text-lg font-bold">
+              Filtres
+            </h2>
 
-            <div className="relative mt-2">
-              <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+            {/* SEARCH */}
+            <div>
+              <label className="text-sm font-medium">
+                Rechercher
+              </label>
+
+              <div className="relative mt-2">
+                <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                <input
+                  className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm"
+                  value={filters.search}
+                  onChange={(e) =>
+                    handleFilterChange({ search: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+
+            {/* CATEGORY */}
+            <div>
+              <h3 className="text-sm font-semibold mb-3">
+                Catégorie
+              </h3>
+
+              {Object.entries(CATEGORIES).map(([key, label]) => (
+                <label key={key} className="flex items-center mb-2">
+                  <input
+                    type="radio"
+                    name="category"
+                    checked={filters.category === key}
+                    onChange={() =>
+                      handleFilterChange({ category: key })
+                    }
+                  />
+                  <span className="ml-2 text-sm">{label}</span>
+                </label>
+              ))}
+            </div>
+
+            {/* SUBCATEGORY */}
+            <div>
+              <h3 className="text-sm font-semibold mb-3">
+                Type
+              </h3>
+
+              {Object.entries(SUBCATEGORIES).map(([key, label]) => (
+                <label key={key} className="flex items-center mb-2">
+                  <input
+                    type="checkbox"
+                    checked={filters.subcategory === key}
+                    onChange={(e) =>
+                      handleFilterChange({
+                        subcategory: e.target.checked ? key : null,
+                      })
+                    }
+                  />
+                  <span className="ml-2 text-sm">{label}</span>
+                </label>
+              ))}
+            </div>
+
+            {/* SIZES */}
+            <div>
+              <h3 className="text-sm font-semibold mb-3">
+                Tailles
+              </h3>
+
+              <div className="grid grid-cols-3 gap-2">
+                {SIZES.map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => {
+                      const updated = filters.sizes.includes(size)
+                        ? filters.sizes.filter((s) => s !== size)
+                        : [...filters.sizes, size];
+
+                      handleFilterChange({ sizes: updated });
+                    }}
+                    className={`py-2 border rounded text-sm ${
+                      filters.sizes.includes(size)
+                        ? 'bg-black text-white'
+                        : 'bg-white hover:bg-gray-100'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* PRICE */}
+            <div>
+              <h3 className="text-sm font-semibold mb-3">
+                Prix
+              </h3>
 
               <input
-                className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm"
-                value={filters.search}
+                type="range"
+                min="0"
+                max="500000"
+                step="10000"
+                value={filters.priceRange[1]}
                 onChange={(e) =>
-                  handleFilterChange({ search: e.target.value })
+                  handleFilterChange({
+                    priceRange: [0, Number(e.target.value)],
+                  })
                 }
+                className="w-full"
               />
+
+              <div className="text-sm mt-2">
+                Jusqu’à {filters.priceRange[1].toLocaleString()} FCFA
+              </div>
+            </div>
+
+            {/* COLORS */}
+            <div>
+              <h3 className="text-sm font-semibold mb-3">
+                Couleurs
+              </h3>
+
+              <div className="grid grid-cols-2 gap-2">
+                {COLORS.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => {
+                      const updated = filters.colors.includes(color)
+                        ? filters.colors.filter((c) => c !== color)
+                        : [...filters.colors, color];
+
+                      handleFilterChange({ colors: updated });
+                    }}
+                    className={`py-2 border rounded text-sm ${
+                      filters.colors.includes(color)
+                        ? 'bg-black text-white'
+                        : 'bg-white hover:bg-gray-100'
+                    }`}
+                  >
+                    {color}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* CATEGORY */}
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold mb-3">Catégorie</h3>
-
-            {Object.entries(CATEGORIES).map(([key, label]) => (
-              <label key={key} className="flex items-center mb-2">
-                <input
-                  type="radio"
-                  name="category"
-                  checked={filters.category === key}
-                  onChange={() =>
-                    handleFilterChange({ category: key })
-                  }
-                />
-                <span className="ml-2 text-sm">{label}</span>
-              </label>
-            ))}
-          </div>
-
-          {/* SUBCATEGORY */}
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold mb-3">Type</h3>
-
-            {Object.entries(SUBCATEGORIES).map(([key, label]) => (
-              <label key={key} className="flex items-center mb-2">
-                <input
-                  type="checkbox"
-                  checked={filters.subcategory === key}
-                  onChange={(e) =>
-                    handleFilterChange({
-                      subcategory: e.target.checked ? key : null,
-                    })
-                  }
-                />
-                <span className="ml-2 text-sm">{label}</span>
-              </label>
-            ))}
-          </div>
-
-          {/* PRICE */}
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold mb-3">Prix</h3>
-
-            <input
-              type="range"
-              min="0"
-              max="500000"
-              step="10000"
-              value={filters.priceRange[1]}
-              onChange={(e) =>
-                handleFilterChange({
-                  priceRange: [0, Number(e.target.value)],
-                })
-              }
-              className="w-full"
-            />
-
-            <div className="text-sm mt-2">
-              Jusqu’à {filters.priceRange[1].toLocaleString()} FCFA
-            </div>
-          </div>
-
-          {/* COLORS */}
-<div className="mb-6">
-  <h3 className="text-sm font-semibold mb-3">Couleurs</h3>
-
-  <div className="grid grid-cols-2 gap-2">
-    {COLORS.map((color) => (
-      <button
-        key={color}
-        onClick={() => {
-          const updated = filters.colors.includes(color)
-            ? filters.colors.filter((c) => c !== color)
-            : [...filters.colors, color];
-
-          handleFilterChange({ colors: updated });
-        }}
-        className={`py-2 border rounded text-sm transition ${
-          filters.colors.includes(color)
-            ? 'bg-black text-white'
-            : 'bg-white hover:bg-gray-100'
-        }`}
-      >
-        {color}
-      </button>
-    ))}
-  </div>
-</div>
-
-          {/* RESET */}
+          {/* FOOTER FIXE */}
           {activeFilters > 0 && (
-            <button
-              onClick={clearFilters}
-              className="w-full bg-gray-100 py-2 rounded"
-            >
-              Réinitialiser
-            </button>
+            <div className="p-4 border-t bg-white">
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="w-full bg-gray-100 hover:bg-gray-200 py-2 rounded-lg"
+              >
+                Réinitialiser
+              </button>
+            </div>
           )}
         </div>
       </div>
