@@ -98,7 +98,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="group h-full flex flex-col bg-gradient-to-br from-white to-amber-50 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1 border border-amber-100">
 
           {/* IMAGE */}
-          <div className="relative h-48 bg-gray-200 overflow-hidden flex-shrink-0">
+          <div className="relative h-44 sm:h-48 md:h-52 bg-gray-200 overflow-hidden flex-shrink-0">
             <Image
               src={productImage}
               alt={product.name}
@@ -143,7 +143,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <div className="p-4 flex flex-col flex-1">
 
             {/* NOM PRODUIT */}
-            <h3 className="font-semibold text-gray-900 line-clamp-2 min-h-[48px] group-hover:text-emerald-600 transition-colors">
+            <h3 className="font-semibold text-gray-900 text-sm sm:text-base line-clamp-2 min-h-[40px] sm:min-h-[48px] group-hover:text-emerald-600 transition-colors">
               {product.name}
             </h3>
 
@@ -151,7 +151,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <div className="mt-auto pt-3 flex items-center gap-2 flex-wrap">
 
               {/* Nouveau prix */}
-              <span className="text-emerald-600 font-bold text-lg">
+              <span className="text-emerald-600 font-bold text-base sm:text-lg">
                 {formatPrice(
                   discount
                     ? discountedPrice

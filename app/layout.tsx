@@ -35,7 +35,7 @@ export default function RootLayout({
           </div>
 
           {/* CONTENU */}
-          <main className="min-h-screen relative z-0">
+          <main className="min-h-screen">
             {children}
           </main>
 

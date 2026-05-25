@@ -29,7 +29,7 @@ export default function CategoriesPreview() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
           {categories.map((cat) => (
             <Link
               key={cat.id}

@@ -103,46 +103,45 @@ export default function BoutiqueClient({
         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-teal-100/20 blur-3xl rounded-full" />
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        <div className="flex flex-col md:flex-row gap-6">
 
-        {/* SIDEBAR */}
-        <aside className="
-          md:w-72
-          w-full
-          md:sticky md:top-24
-          z-30
-          
-        ">
-          <div className="
-           
-            border border-gray-200
-            rounded-2xl
-            p-4
-            shadow-lg
-        
-          
+          {/* SIDEBAR */}
+          <aside className="
+            md:w-64 lg:w-72
+            w-full
+            md:sticky md:top-24
+            md:self-start
+            z-30
           ">
-            <FilterPanel onFilterChange={setFilters} />
-          </div>
-          
-        </aside>
+            <div className="
+              md:border md:border-gray-200
+              md:rounded-2xl
+              md:p-4
+              md:shadow-lg
+              md:bg-white
+            ">
+              <FilterPanel onFilterChange={setFilters} />
+            </div>
+          </aside>
 
-        {/* CONTENT */}
-        <main className="flex-1 min-w-0 z-0">
+          {/* CONTENT */}
+          <main className="flex-1 min-w-0 z-0">
 
-          <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-6">
            
 
-            <div className="text-sm bg-white px-3 py-1 rounded-full border">
-              {filteredProducts.length} produits
+              <div className="text-sm bg-white px-3 py-1 rounded-full border">
+                {filteredProducts.length} produits
+              </div>
             </div>
-          </div>
 
-          <ProductGrid
-            products={filteredProducts}
-            isLoading={isLoading}
-          />
-        </main>
+            <ProductGrid
+              products={filteredProducts}
+              isLoading={isLoading}
+            />
+          </main>
+        </div>
       </div>
     </div>
   );

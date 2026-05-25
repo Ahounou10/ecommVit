@@ -109,28 +109,27 @@ export default function ProductPage({
     fetchProduct();
   }, [id]);
 
-  // ESC MODAL
+  // ESC + SCROLL LOCK MODAL
   useEffect(() => {
     if (!showImageModal) return;
 
-    const handleEscapeKey = (
-      e: KeyboardEvent
-    ) => {
+    // Bloquer le scroll en arrière-plan
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    const handleEscapeKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setShowImageModal(false);
       }
     };
 
-    window.addEventListener(
-      'keydown',
-      handleEscapeKey
-    );
+    window.addEventListener('keydown', handleEscapeKey);
 
     return () => {
-      window.removeEventListener(
-        'keydown',
-        handleEscapeKey
-      );
+      window.removeEventListener('keydown', handleEscapeKey);
+      // Restaurer le scroll
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     };
   }, [showImageModal]);
 
@@ -478,30 +477,37 @@ Merci !
       {/* MODAL IMAGE */}
       {showImageModal && (
         <div
-          onClick={() =>
-            setShowImageModal(false)
-          }
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+          onClick={() => setShowImageModal(false)}
+          className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image agrandie"
         >
-          <div className="relative w-full h-full max-w-6xl max-h-[90vh]">
+          {/* BOUTON FERMETURE — toujours ancré en haut à droite du viewport */}
+          <button
+            type="button"
+            onClick={() => setShowImageModal(false)}
+            className="absolute top-4 right-4 z-10 bg-white/90 backdrop-blur-md rounded-full p-3 hover:bg-white active:scale-95 transition-all duration-200 shadow-xl"
+            aria-label="Fermer"
+          >
+            <X className="w-5 h-5 text-slate-800" />
+          </button>
 
-            <Image
-              src={currentImage}
-              alt={product.name}
-              fill
-              className="object-contain"
-              sizes="100vw"
-            />
-
-            <button
-              type="button"
-              onClick={() =>
-                setShowImageModal(false)
-              }
-              className="absolute top-4 right-4 bg-white/90 backdrop-blur-md rounded-full p-3 hover:bg-white transition-all duration-300 shadow-lg"
-            >
-              <X className="w-5 h-5 text-slate-800" />
-            </button>
+          {/* IMAGE — zone sécurisée, clic ne ferme pas */}
+          <div
+            className="absolute inset-0 flex items-center justify-center p-14 sm:p-16 md:p-20"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative w-full h-full">
+              <Image
+                src={currentImage}
+                alt={product.name}
+                fill
+                className="object-contain"
+                sizes="100vw"
+                priority
+              />
+            </div>
           </div>
         </div>
       )}

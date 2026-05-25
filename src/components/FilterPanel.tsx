@@ -100,7 +100,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
           fixed md:relative
           top-0 left-0
           h-screen md:h-auto
-          w-80 md:w-64
+          w-[85vw] max-w-xs sm:max-w-sm md:w-full md:max-w-none
           bg-white
           z-[9999]
           shadow-2xl md:shadow-none
@@ -117,7 +117,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
             {/* CLOSE */}
             <button
               onClick={() => setIsOpen(false)}
-              className="md:hidden absolute top-4 right-4 p-2 rounded-full bg-white shadow hover:bg-gray-100 top-17 "
+              className="md:hidden absolute top-4 right-4 p-2 rounded-full bg-white shadow hover:bg-gray-100 "
             >
               <X className="w-5 h-5" />
             </button>
