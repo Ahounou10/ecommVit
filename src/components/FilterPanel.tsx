@@ -260,7 +260,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
             </div>
 
             {/* COLORS */}
-            <div>
+            <div className="pb-20 md:pb-6" >
               <h3 className="text-sm font-semibold mb-3">
                 Couleurs
               </h3>
