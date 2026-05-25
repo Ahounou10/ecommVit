@@ -112,7 +112,8 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
         <div className="h-full flex flex-col ">
 
           {/* SCROLL CONTENT */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 ">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6  pb-32
+    md:pb-6 ">
 
             {/* CLOSE */}
            <button
@@ -292,7 +293,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
 
           {/* FOOTER FIXE */}
           {activeFilters > 0 && (
-            <div className="p-4 border-t bg-white">
+            <div className="p-4 border-t bg-white  ">
               <button
                 type="button"
                 onClick={clearFilters}
