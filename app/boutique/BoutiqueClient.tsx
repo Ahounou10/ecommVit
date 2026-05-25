@@ -112,7 +112,7 @@ export default function BoutiqueClient({
             w-full
             md:sticky md:top-24
             md:self-start
-            z-30
+           
           ">
             <div className="
               md:border md:border-gray-200
@@ -126,7 +126,7 @@ export default function BoutiqueClient({
           </aside>
 
           {/* CONTENT */}
-          <main className="flex-1 min-w-0 z-0">
+          <main className="flex-1 min-w-0 ">
 
             <div className="flex justify-between items-center mb-6">
            

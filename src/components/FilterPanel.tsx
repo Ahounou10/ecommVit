@@ -115,12 +115,29 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
           <div className="flex-1 overflow-y-auto p-6 space-y-6 ">
 
             {/* CLOSE */}
-            <button
-              onClick={() => setIsOpen(false)}
-              className="md:hidden absolute top-4 right-4 p-2 rounded-full bg-white shadow hover:bg-gray-100 "
-            >
-              <X className="w-5 h-5" />
-            </button>
+           <button
+  onClick={() => setIsOpen(false)}
+  className="
+    md:hidden
+    absolute
+    top-4
+    right-4
+    z-[10000]
+    bg-white
+    border
+    border-gray-200
+    shadow-lg
+    rounded-full
+    p-2
+    flex
+    items-center
+    justify-center
+    hover:bg-gray-100
+    transition
+  "
+>
+  <X className="w-5 h-5 text-black" />
+</button>
 
             <h2 className="text-lg font-bold">
               Filtres
