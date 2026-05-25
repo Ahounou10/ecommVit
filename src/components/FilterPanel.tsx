@@ -292,7 +292,7 @@ export default function FilterPanel({ onFilterChange }: FilterProps) {
 
           {/* FOOTER FIXE */}
           {activeFilters > 0 && (
-            <div className="p-4 border-t bg-white  pb-32
+            <div className="p-4 border-t bg-white  pb-20
     md:pb-6  ">
               <button
                 type="button"
