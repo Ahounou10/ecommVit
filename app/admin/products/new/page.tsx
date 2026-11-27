@@ -52,6 +52,13 @@ const CATEGORIES = {
 
 const ADMIN_USER_ID = '68f37f7e-f4c0-406e-8e05-1cec82f261f0';
 
+function getProductStoragePath(publicUrl: string): string | null {
+  const marker = '/storage/v1/object/public/products/';
+  const markerIndex = publicUrl.indexOf(marker);
+  if (markerIndex === -1) return null;
+  return decodeURIComponent(publicUrl.slice(markerIndex + marker.length).split('?')[0]);
+}
+
 const SUBCATEGORIES = {
   tshirts: 'T-Shirts',
   jeans: 'Jeans',
@@ -321,6 +328,14 @@ export default function NewProductPage() {
                     <button
                       type="button"
                       onClick={() => {
+                        const imageUrl = formData.images[idx];
+                        const storagePath = imageUrl ? getProductStoragePath(imageUrl) : null;
+                        if (storagePath) {
+                          void supabase.storage.from('products').remove([storagePath]).then(({ error }) => {
+                            if (error) setError('L’image a été retirée du formulaire, mais pas du stockage.');
+                          });
+                        }
+
                         URL.revokeObjectURL(imagePreviews[idx]);
                         const newPreviews = imagePreviews.filter((_, i) => i !== idx);
                         const newImages = formData.images.filter((_, i) => i !== idx);
