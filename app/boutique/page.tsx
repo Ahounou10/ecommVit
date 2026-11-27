@@ -17,7 +17,7 @@ export default async function BoutiquePage({
     : params.category;
 
   const category = VALID_CATEGORIES.includes(requestedCategory ?? '')
-    ? requestedCategory
+    ? requestedCategory ?? null
     : null;
 
   return <BoutiqueClient category={category} />;
