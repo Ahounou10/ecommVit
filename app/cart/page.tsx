@@ -260,12 +260,12 @@ export default function CartPage() {
               product.price,
               product.promo_percent
             );
+            const status = availability[item.cartItemId] ?? 'checking';
             const imageSrc =
               status === 'removed'
                 ? '/placeholder.png'
                 : product.images?.[0] || product.image_url || '/placeholder.png';
             const stock = Math.max(0, Number(product.stock) || 0);
-            const status = availability[item.cartItemId] ?? 'checking';
             const isAvailable = status === 'available';
 
             return (
