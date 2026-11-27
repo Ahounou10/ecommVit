@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 
 // Événement custom pour synchroniser le panier entre les pages
 const CART_UPDATE_EVENT = 'cart-updated';
