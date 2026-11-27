@@ -31,8 +31,14 @@ export default function CartPage() {
   }, []);
 
   useEffect(() => {
-    refreshCart();
-    setIsHydrated(true);
+    const frameId = window.requestAnimationFrame(() => {
+      refreshCart();
+      setIsHydrated(true);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
   }, [refreshCart]);
 
   useCartSync(refreshCart);
