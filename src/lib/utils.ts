@@ -42,37 +42,30 @@ Bonjour, je souhaite commander ce produit :
 Merci `;
 }
 
-// Format pour le panier (plusieurs produits cohérent)
+// Format clair pour une commande contenant plusieurs produits
 export function formatCartWhatsAppMessage(items: CartItem[]): string {
   const productsList = items
     .map((item, index) => {
       const product = item.product;
       const productImage = product.images?.[0] || product.image_url;
 
-      return `Produit ${index + 1}
+      return `🛍️ *Article ${index + 1} — ${product.name}*
+Taille : ${item.size || 'Non précisée'}
+Couleur : ${item.color || 'Non précisée'}
+Quantité : ${item.quantity}
 
- Nom : ${product.name}
-
- Taille : ${item.size || 'Non précisé'}
-
- Couleur : ${item.color || 'Non précisé'}
-
- Quantité : ${item.quantity}
-
- Image :
-${productImage}`;
+📷 *Photo du produit :*
+${productImage || 'Photo non disponible'}`;
     })
     .join('\n\n━━━━━━━━━━━━━━\n\n');
 
-  
-
-  return ` *COMMANDE - PANIER*
+  return `🛒 *COMMANDE — PANIER*
 
 Bonjour, je souhaite passer la commande suivante :
 
 ${productsList}
 
-Merci !`;
+Merci pour votre attention !`;
 }
 
 export function getWhatsAppLink(message: string) {
