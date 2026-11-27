@@ -66,7 +66,11 @@ export default function CartPage() {
 
   function handleRemoveItem(cartItemId: string) {
     setCartError('');
-    removeCartItemById(cartItemId);
+    const removed = removeCartItemById(cartItemId);
+    if (!removed) {
+      setCartError('Impossible de modifier le panier sur cet appareil.');
+      return;
+    }
     refreshCart();
 
     window.dispatchEvent(
