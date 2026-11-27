@@ -74,9 +74,13 @@ export function getCart(): CartItem[] {
       .map(normalizeCartItem)
       .filter((item): item is CartItem => item !== null);
 
-    // Migre les anciens articles et nettoie les entrées invalides.
+    // La migration ne doit pas rendre le panier inaccessible si le stockage est plein.
     if (JSON.stringify(parsed) !== JSON.stringify(normalized)) {
-      window.localStorage.setItem(CART_KEY, JSON.stringify(normalized));
+      try {
+        window.localStorage.setItem(CART_KEY, JSON.stringify(normalized));
+      } catch (storageError) {
+        console.error('Impossible de migrer le panier local :', storageError);
+      }
     }
 
     return normalized;
