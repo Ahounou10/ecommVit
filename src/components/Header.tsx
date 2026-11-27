@@ -18,8 +18,12 @@ export default function Header() {
 
     updateCart();
     window.addEventListener(CART_UPDATE_EVENT, updateCart);
+    window.addEventListener('storage', updateCart);
 
-    return () => window.removeEventListener(CART_UPDATE_EVENT, updateCart);
+    return () => {
+      window.removeEventListener(CART_UPDATE_EVENT, updateCart);
+      window.removeEventListener('storage', updateCart);
+    };
   }, []);
 
   const navLinks = [
