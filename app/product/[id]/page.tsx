@@ -163,7 +163,7 @@ export default function ProductPage({
     product.promo_percent
   );
 
-  const isSoldOut = product.stock === 0;
+  const isSoldOut = Number(product.stock) <= 0;
 
   // IMAGES
   const productImages =
