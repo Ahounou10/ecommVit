@@ -95,13 +95,7 @@ export default function BoutiqueClient({
   }, [products, filters]);
 
   return (
-    <div className="relative min-h-screen">
-
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 pointer-events-none -z-10">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-100/30 blur-3xl rounded-full" />
-        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-teal-100/20 blur-3xl rounded-full" />
-      </div>
+    <div className="min-h-screen bg-[#fafaf9]">
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         <div className="flex flex-col md:flex-row gap-6">
