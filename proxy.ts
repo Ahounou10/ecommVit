@@ -3,7 +3,7 @@ import { createServerClient } from '@supabase/ssr'
 import type { NextRequest } from 'next/server'
 
 export async function proxy(req: NextRequest) {
-  const res = NextResponse.next()
+  let res = NextResponse.next({ request: req })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,6 +14,12 @@ export async function proxy(req: NextRequest) {
           return req.cookies.getAll()
         },
         setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => {
+            req.cookies.set(name, value)
+          })
+
+          res = NextResponse.next({ request: req })
+
           cookiesToSet.forEach(({ name, value, options }) => {
             res.cookies.set(name, value, options)
           })
@@ -22,17 +28,42 @@ export async function proxy(req: NextRequest) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  const isAdminRoute = req.nextUrl.pathname.startsWith('/admin')
-
   const isLoginPage = req.nextUrl.pathname === '/admin/login'
 
-  // 🔒 Protection des routes admin
-  if (isAdminRoute && !isLoginPage && !user) {
-    return NextResponse.redirect(new URL('/admin/login', req.url))
+  // La page de connexion reste accessible sans session.
+  if (isLoginPage) {
+    return res
+  }
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
+
+  // Un visiteur non connecté doit se connecter.
+  if (error || !user) {
+    const redirectResponse = NextResponse.redirect(
+      new URL('/admin/login', req.url)
+    )
+
+    res.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie)
+    })
+
+    return redirectResponse
+  }
+
+  // Seul le compte administrateur autorisé peut accéder aux pages admin.
+  const adminUserId = process.env.ADMIN_USER_ID
+
+  if (!adminUserId || user.id !== adminUserId) {
+    const redirectResponse = NextResponse.redirect(new URL('/', req.url))
+
+    res.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie)
+    })
+
+    return redirectResponse
   }
 
   return res

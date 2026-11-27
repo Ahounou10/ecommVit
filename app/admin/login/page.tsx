@@ -4,62 +4,89 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/supabase/client';
 
+const ADMIN_USER_ID = '68f37f7e-f4c0-406e-8e05-1cec82f261f0';
+
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const router = useRouter();
   const supabase = createClient();
 
- 
+  useEffect(() => {
+    let isMounted = true;
 
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-      router.push('/admin/dashboard');
-    }
-  };
+    const checkAuth = async () => {
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
 
-  
+      if (!isMounted || authError || !user) return;
 
-   useEffect(() => {
-    checkAuth();
-  }, []);
+      if (user.id === ADMIN_USER_ID) {
+        router.replace('/admin/dashboard');
+        return;
+      }
+
+      await supabase.auth.signOut();
+
+      if (isMounted) {
+        setError("Ce compte n'est pas autorisé à accéder à l'administration.");
+      }
+    };
+
+    void checkAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router, supabase]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
 
-   
-
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
-      router.push('/admin/dashboard');
+
+      if (!data.user || data.user.id !== ADMIN_USER_ID) {
+        await supabase.auth.signOut();
+        throw new Error(
+          "Ce compte n'est pas autorisé à accéder à l'administration."
+        );
+      }
+
+      router.replace('/admin/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur de connexion');
+      setError(
+        err instanceof Error ? err.message : 'Erreur de connexion'
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-950 to-emerald-950">
+    <div className="min-h-screen flex items-center justify-center bg-[#202823]">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-lg shadow-xl p-8">
-          {/* Logo */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-emerald-600 rounded-lg text-white font-bold text-xl mb-4">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-950 rounded-lg text-white font-bold text-xl mb-4">
               B
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Admin</h1>
-            <p className="text-gray-600 text-sm mt-2">Gestion de la boutique</p>
+            <p className="text-gray-600 text-sm mt-2">
+              Gestion de la boutique
+            </p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
@@ -77,7 +104,7 @@ export default function AdminLoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-700"
                 placeholder="admin@boutique.ci"
                 required
               />
@@ -100,7 +127,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gray-950 hover:bg-gray-700 text-white font-bold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Connexion...' : 'Se connecter'}
             </button>

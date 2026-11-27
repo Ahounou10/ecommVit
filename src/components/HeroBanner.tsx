@@ -1,43 +1,45 @@
-'use client';
+import Link from 'next/link';
 
 export default function HeroBanner() {
   return (
-    <section className="relative flex flex-col items-center justify-center min-h-[520px] md:min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-emerald-950 overflow-hidden py-20 md:py-0">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-emerald-600 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" />
-        <div className="absolute top-0 -right-4 w-72 h-72 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl animate-pulse animation-delay-2000" />
-      </div>
-
-      {/* Content */}
-      <div className="relative w-full flex items-center justify-center px-4 sm:px-6">
-        <div className="text-center max-w-3xl w-full">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
-            Vêtements de <span className="text-emerald-400">qualité premium</span> pour votre style
-          </h1>
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-xl mx-auto px-2">
-            Découvrez notre collection exclusive de vêtements modernes et élégants. 
-            Commandez simplement via WhatsApp et recevez chez vous.
+    <section className="bg-[#202823] text-white">
+      <div className="mx-auto grid min-h-[440px] max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 md:grid-cols-[1.15fr_0.85fr] md:py-24 lg:px-8">
+        <div className="max-w-2xl">
+          <p className="mb-5 text-xs font-semibold uppercase tracking-[0.22em] text-[#c4d0c8]">
+            Collection sélectionnée
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a
+          <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+            Des pièces choisies pour votre quotidien.
+          </h1>
+          <p className="mt-6 max-w-xl text-base leading-7 text-gray-300 sm:text-lg">
+            Découvrez une sélection de vêtements faciles à porter, à associer et à commander.
+          </p>
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <Link
               href="/boutique"
-              className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 ease-out hover:scale-105 shadow-lg text-base"
+              className="inline-flex min-h-12 items-center justify-center bg-white px-7 text-sm font-semibold text-gray-950 hover:bg-gray-100"
             >
               Découvrir la boutique
-            </a>
-            <a
+            </Link>
+            <Link
               href="#nouveautes"
-              className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-semibold border border-white/30 transition-all duration-300 ease-out hover:scale-105 hover:border-white/50 text-base"
+              className="inline-flex min-h-12 items-center justify-center border border-white/40 px-7 text-sm font-semibold text-white hover:bg-white/10"
             >
               Voir les nouveautés
-            </a>
+            </Link>
           </div>
         </div>
-      </div>
 
-      {/* Bottom Wave */}
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent opacity-5 pointer-events-none" />
+        <div className="hidden border-l border-white/20 pl-10 md:block">
+          <p className="text-sm uppercase tracking-[0.18em] text-gray-400">
+            Boutique vêtements
+          </p>
+          <p className="mt-4 max-w-xs text-2xl font-medium leading-snug text-white">
+            Une sélection claire. Un achat simple. Un service direct.
+          </p>
+          <div className="mt-8 h-px w-20 bg-[#c4d0c8]" />
+        </div>
+      </div>
     </section>
   );
 }

@@ -67,11 +67,11 @@ export default function Toast() {
               flex
               items-center
               gap-3
-              rounded-2xl
+              rounded-md
               bg-white
               border
               border-gray-200
-              shadow-2xl
+              shadow-lg
               px-4
               py-3
               animate-in

@@ -89,12 +89,12 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#fafaf9]">
       {/* HEADER */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-bold">
+            <div className="w-10 h-10 bg-gray-950 rounded-lg flex items-center justify-center text-white font-bold">
               B
             </div>
 
@@ -122,7 +122,7 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* STATS */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-lg p-5 shadow">
+          <div className="bg-white border border-gray-200 p-5">
             <p className="text-sm text-gray-500">
               Total Produits
             </p>
@@ -135,7 +135,7 @@ export default function AdminDashboard() {
             <p className="text-sm text-gray-500">
               En stock
             </p>
-            <p className="text-3xl font-bold text-green-600">
+            <p className="text-3xl font-semibold text-gray-900">
               {
                 products.filter(
                   (product) => product.stock > 0
@@ -148,7 +148,7 @@ export default function AdminDashboard() {
             <p className="text-sm text-gray-500">
               Ruptures
             </p>
-            <p className="text-3xl font-bold text-red-600">
+            <p className="text-3xl font-semibold text-gray-900">
               {
                 products.filter(
                   (product) => product.stock === 0
@@ -161,7 +161,7 @@ export default function AdminDashboard() {
             <p className="text-sm text-gray-500">
               Promotions
             </p>
-            <p className="text-3xl font-bold text-orange-600">
+            <p className="text-3xl font-semibold text-gray-900">
               {
                 products.filter(
                   (product) =>
@@ -176,7 +176,7 @@ export default function AdminDashboard() {
         <div className="mb-6">
           <Link
             href="/admin/products/new"
-            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-lg font-semibold transition-all duration-300 ease-out hover:shadow-lg hover:scale-105"
+            className="inline-flex items-center gap-2 bg-gray-950 px-5 py-3 text-sm font-semibold text-white hover:bg-gray-700"
           >
             <Plus className="w-5 h-5" />
             Ajouter un produit
@@ -184,10 +184,10 @@ export default function AdminDashboard() {
         </div>
 
         {/* TABLEAU */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-100 border-b">
+              <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th className="px-4 py-3 text-left">
                     Produit
@@ -227,7 +227,7 @@ export default function AdminDashboard() {
                   products.map((product) => (
                     <tr
                       key={product.id}
-                      className="border-b hover:bg-gray-50"
+                      className="border-b border-gray-100 hover:bg-gray-50"
                     >
                       <td className="px-4 py-4">
                         {product.name}
@@ -246,7 +246,7 @@ export default function AdminDashboard() {
                         <div className="flex justify-end gap-2">
                           <Link
                             href={`/admin/products/${product.id}`}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-all duration-300 ease-out hover:scale-110"
+                            className="p-2 text-gray-700 hover:bg-gray-100 rounded"
                           >
                             <Edit2 className="w-4 h-4" />
                           </Link>
@@ -257,7 +257,7 @@ export default function AdminDashboard() {
                                 product.id
                               )
                             }
-                            className="p-2 text-red-600 hover:bg-red-50 rounded transition-all duration-300 ease-out hover:scale-110"
+                            className="p-2 text-red-700 hover:bg-red-50 rounded"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import HeroBanner from '@/components/HeroBanner';
 import Features from '@/components/Features';
 import CategoriesPreview from '@/components/CategoriesPreview';
@@ -7,94 +8,47 @@ export default function Home() {
     <>
       <HeroBanner />
 
-      {/* NOUVEAUTÉS */}
-      <section
-        id="nouveautes"
-        className="relative overflow-hidden py-16 sm:py-24 md:py-32 bg-gradient-to-br from-slate-50 via-white to-emerald-50 border-t border-emerald-100"
-      >
-        {/* Glow Effects */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-200/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-100/20 rounded-full blur-3xl" />
-        </div>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-700 bg-clip-text text-transparent mb-4 sm:mb-6">
-              Nouveautés
-            </h2>
-
-            <p className="text-base sm:text-lg text-slate-600 mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed">
-              Découvrez les derniers articles ajoutés à notre boutique.
-              Des pièces modernes, élégantes et tendance sélectionnées
-              spécialement pour sublimer votre style.
-            </p>
-
-            <a
-              href="/boutique"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 sm:px-10 py-3 sm:py-4 rounded-2xl font-semibold transition-all duration-300 ease-out hover:-translate-y-1 shadow-lg hover:shadow-2xl text-sm sm:text-base"
-            >
-              Voir tous les produits
-              <span className="text-lg">→</span>
-            </a>
-          </div>
+      <section id="nouveautes" className="border-b border-gray-200 bg-[#fafaf9] py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
+            À découvrir
+          </p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-gray-950 sm:text-4xl">
+            Les nouveautés
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-gray-600 sm:text-base">
+            Retrouvez les derniers articles ajoutés à la boutique et parcourez la sélection complète.
+          </p>
+          <Link
+            href="/boutique"
+            className="mt-7 inline-flex min-h-12 items-center justify-center bg-gray-950 px-7 text-sm font-semibold text-white hover:bg-gray-700"
+          >
+            Voir tous les produits
+          </Link>
         </div>
       </section>
 
-      {/* CATÉGORIES */}
-      <div className="relative bg-white">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.08),transparent_30%)] pointer-events-none" />
+      <CategoriesPreview />
+      <Features />
 
-        <div className="relative">
-          <CategoriesPreview />
-        </div>
-      </div>
-
-      {/* FEATURES */}
-      <div className="relative bg-gradient-to-b from-white to-slate-50">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(20,184,166,0.08),transparent_30%)] pointer-events-none" />
-
-        <div className="relative">
-          <Features />
-        </div>
-      </div>
-
-      {/* CTA SECTION */}
-      <section className="relative overflow-hidden py-16 sm:py-24 md:py-32 bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 text-white">
-        {/* Glow background */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.25),transparent_40%)]" />
-
-          <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-3xl" />
-
-          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-teal-500/10 rounded-full blur-3xl" />
-        </div>
-
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
-            Redéfinissez votre style avec élégance
-          </h2>
-
-          <p className="text-base sm:text-lg text-emerald-50/90 mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed">
-            Explorez notre collection exclusive et commandez facilement
-            via WhatsApp. Une expérience moderne, rapide et sécurisée.
+      <section className="bg-white py-16 sm:py-20">
+        <div className="mx-auto max-w-5xl border border-gray-200 bg-[#fafaf9] px-6 py-12 text-center sm:px-12">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
+            Besoin d’aide ?
           </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a
-              href="/boutique"
-              className="inline-flex items-center gap-2 bg-white text-emerald-700 px-8 sm:px-10 py-3 sm:py-4 rounded-2xl font-bold hover:bg-emerald-50 transition-all duration-300 ease-out hover:-translate-y-1 shadow-lg hover:shadow-2xl text-sm sm:text-base"
-            >
-              Commander maintenant
-              <span>→</span>
-            </a>
-
-            <a
-              href="/contact"
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 sm:px-10 py-3 sm:py-4 rounded-2xl font-semibold hover:bg-white/20 transition-all duration-300 ease-out text-sm sm:text-base"
-            >
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-gray-950">
+            Une question avant de commander ?
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-gray-600">
+            Contactez-nous pour obtenir des précisions sur un article ou sur les modalités de commande.
+          </p>
+          <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link href="/boutique" className="inline-flex min-h-12 items-center justify-center bg-gray-950 px-7 text-sm font-semibold text-white hover:bg-gray-700">
+              Parcourir la boutique
+            </Link>
+            <Link href="/contact" className="inline-flex min-h-12 items-center justify-center border border-gray-300 bg-white px-7 text-sm font-semibold text-gray-900 hover:bg-gray-100">
               Nous contacter
-            </a>
+            </Link>
           </div>
         </div>
       </section>

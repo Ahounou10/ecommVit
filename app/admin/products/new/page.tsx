@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/supabase/client';
 import Image from 'next/image';
@@ -50,6 +50,15 @@ const CATEGORIES = {
   mixte: 'Mixte',
 };
 
+const ADMIN_USER_ID = '68f37f7e-f4c0-406e-8e05-1cec82f261f0';
+
+function getProductStoragePath(publicUrl: string): string | null {
+  const marker = '/storage/v1/object/public/products/';
+  const markerIndex = publicUrl.indexOf(marker);
+  if (markerIndex === -1) return null;
+  return decodeURIComponent(publicUrl.slice(markerIndex + marker.length).split('?')[0]);
+}
+
 const SUBCATEGORIES = {
   tshirts: 'T-Shirts',
   jeans: 'Jeans',
@@ -60,7 +69,7 @@ const SUBCATEGORIES = {
 
 export default function NewProductPage() {
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const [formData, setFormData] = useState<FormDataType>({
     name: '',
@@ -103,25 +112,28 @@ export default function NewProductPage() {
       setError('');
       setSuccess('');
       setIsUploading(true);
+      const uploadedPaths: string[] = [];
+      const newPreviews: string[] = [];
 
       try {
         const uploadedUrls: string[] = [];
-        const newPreviews: string[] = [];
+
+        if (imagePreviews.length + files.length > 8) {
+          throw new Error('Vous pouvez ajouter au maximum 8 images à la fois.');
+        }
+
+        for (const file of Array.from(files)) {
+          if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+            throw new Error('Format non autorisé. Utilisez JPG, PNG ou WEBP.');
+          }
+          if (file.size > 5 * 1024 * 1024) {
+            throw new Error('Chaque image doit peser 5 Mo maximum.');
+          }
+        }
 
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          const ext = file.name.split('.').pop()?.toLowerCase();
-
-          if (!ext || !['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
-            throw new Error(
-              `Image ${i + 1}: Format non autorisé. Utilisez JPG, JPEG, PNG ou WEBP.`
-            );
-          }
-
-          if (file.size > 5 * 1024 * 1024) {
-            throw new Error(`Image ${i + 1}: Fichier trop lourd. Maximum 5MB.`);
-          }
-
+          const ext = file.type === 'image/jpeg' ? 'jpg' : file.type.split('/')[1];
           const localPreview = URL.createObjectURL(file);
           newPreviews.push(localPreview);
 
@@ -137,6 +149,7 @@ export default function NewProductPage() {
             });
 
           if (uploadError) throw uploadError;
+          uploadedPaths.push(fileName);
 
           const { data } = supabase.storage
             .from('products')
@@ -145,27 +158,27 @@ export default function NewProductPage() {
           uploadedUrls.push(data.publicUrl);
         }
 
-        setImagePreviews(newPreviews);
+        setImagePreviews((prev) => [...prev, ...newPreviews]);
         setFormData((prev) => ({
           ...prev,
-          images: uploadedUrls,
+          images: [...prev.images, ...uploadedUrls],
         }));
 
         setSuccess(
           `${files.length} image(s) téléchargée(s) avec succès.`
         );
       } catch (err: unknown) {
+        if (uploadedPaths.length > 0) {
+          await supabase.storage.from('products').remove(uploadedPaths);
+        }
+        newPreviews.forEach((preview) => URL.revokeObjectURL(preview));
         setError(getErrorMessage(err));
-        setImagePreviews([]);
-        setFormData((prev) => ({
-          ...prev,
-          images: [],
-        }));
       } finally {
         setIsUploading(false);
+        e.target.value = '';
       }
     },
-    [supabase]
+    [imagePreviews.length, supabase]
   );
 
   function toggleSize(size: string) {
@@ -198,12 +211,20 @@ export default function NewProductPage() {
           throw new Error('Le nom du produit est requis.');
         }
 
-        if (!formData.price || Number(formData.price) <= 0) {
-          throw new Error('Le prix doit être supérieur à 0.');
+        const price = Number(formData.price);
+        const stock = Number(formData.stock);
+        const promo = Number(formData.promo_percent);
+
+        if (!Number.isInteger(price) || price <= 0) {
+          throw new Error('Le prix doit être un nombre entier supérieur à 0.');
         }
 
-        if (!formData.stock || Number(formData.stock) < 0) {
-          throw new Error('Le stock est invalide.');
+        if (formData.stock.trim() === '' || !Number.isInteger(stock) || stock < 0) {
+          throw new Error('Le stock doit être un nombre entier positif ou nul.');
+        }
+
+        if (!Number.isInteger(promo) || promo < 0 || promo > 100) {
+          throw new Error('La promotion doit être comprise entre 0 et 100 %.');
         }
 
         if (formData.images.length === 0) {
@@ -224,22 +245,20 @@ export default function NewProductPage() {
           data: { session },
         } = await supabase.auth.getSession();
 
-        if (!session) {
-          throw new Error(
-            'Vous devez être connecté en admin pour ajouter un produit.'
-          );
+        if (!session || session.user.id !== ADMIN_USER_ID) {
+          throw new Error('Seul le compte administrateur autorisé peut ajouter un produit.');
         }
 
         const payload = {
           name: formData.name.trim(),
-          price: Number(formData.price),
+          price,
           description: formData.description.trim() || null,
           category: formData.category,
           subcategory: formData.subcategory,
           sizes: formData.sizes,
           colors: formData.colors,
-          stock: Number(formData.stock),
-          promo_percent: Number(formData.promo_percent) || 0,
+          stock,
+          promo_percent: promo,
           images: formData.images,
           image_url: formData.images[0],
           is_active: true,
@@ -267,8 +286,8 @@ export default function NewProductPage() {
   );
   
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow p-6 md:p-8">
+    <div className="min-h-screen bg-[#fafaf9] py-10 px-4">
+      <div className="max-w-4xl mx-auto bg-white border border-gray-200 p-6 md:p-8">
         <h1 className="text-3xl font-bold mb-2">Ajouter un produit</h1>
         <p className="text-gray-500 mb-8">
           Remplissez les informations du produit
@@ -309,6 +328,15 @@ export default function NewProductPage() {
                     <button
                       type="button"
                       onClick={() => {
+                        const imageUrl = formData.images[idx];
+                        const storagePath = imageUrl ? getProductStoragePath(imageUrl) : null;
+                        if (storagePath) {
+                          void supabase.storage.from('products').remove([storagePath]).then(({ error }) => {
+                            if (error) setError('L’image a été retirée du formulaire, mais pas du stockage.');
+                          });
+                        }
+
+                        URL.revokeObjectURL(imagePreviews[idx]);
                         const newPreviews = imagePreviews.filter((_, i) => i !== idx);
                         const newImages = formData.images.filter((_, i) => i !== idx);
                         setImagePreviews(newPreviews);
@@ -335,7 +363,7 @@ export default function NewProductPage() {
 
             <input
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               multiple
               onChange={handleImageChange}
               disabled={isUploading}
@@ -372,6 +400,8 @@ export default function NewProductPage() {
             <label className="block font-semibold mb-2">Prix</label>
             <input
               type="number"
+              min="1"
+              step="1"
               value={formData.price}
               onChange={(e) =>
                 setFormData((prev) => ({
@@ -462,7 +492,7 @@ export default function NewProductPage() {
                   onClick={() => toggleSize(size)}
                   className={`px-4 py-2 rounded-lg border ${
                     formData.sizes.includes(size)
-                      ? 'bg-emerald-600 text-white'
+                      ? 'bg-gray-950 text-white'
                       : 'bg-white'
                   }`}
                 >
@@ -486,7 +516,7 @@ export default function NewProductPage() {
                   onClick={() => toggleColor(color.name)}
                   className={`px-4 py-2 rounded-lg border ${
                     formData.colors.includes(color.name)
-                      ? 'ring-2 ring-emerald-600'
+                      ? 'ring-2 ring-gray-900'
                       : ''
                   }`}
                   style={{
@@ -509,6 +539,8 @@ export default function NewProductPage() {
               </label>
               <input
                 type="number"
+                min="0"
+                step="1"
                 value={formData.stock}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -526,6 +558,9 @@ export default function NewProductPage() {
               </label>
               <input
                 type="number"
+                min="0"
+                max="100"
+                step="1"
                 value={formData.promo_percent}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -542,7 +577,7 @@ export default function NewProductPage() {
           <button
             type="submit"
             disabled={isLoading || isUploading}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:bg-gray-400"
+            className="w-full bg-gray-950 hover:bg-gray-700 text-white py-4 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:bg-gray-400"
           >
             {isLoading ? (
               'Publication...'

@@ -8,124 +8,272 @@ export type CartItem = {
   color?: string;
 };
 
+export type CartActionResult = {
+  success: boolean;
+  message: string;
+};
+
 const CART_KEY = 'cart';
+export const CART_UPDATE_EVENT = 'cartUpdated';
 
-// 🔔 notifier toute l'app que le panier a changé
 function notifyCartUpdate() {
-  window.dispatchEvent(new Event('cartUpdated'));
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event(CART_UPDATE_EVENT));
+  }
 }
 
-// 🔑 générer ID unique
 function generateCartItemId(): string {
-  return crypto.randomUUID();
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `cart-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-// 📥 récupérer panier
+function normalizeCartItem(value: unknown): CartItem | null {
+  if (!value || typeof value !== 'object') return null;
+
+  const item = value as Partial<CartItem>;
+  const product = item.product;
+
+  if (
+    !product ||
+    typeof product !== 'object' ||
+    typeof product.id !== 'string' ||
+    !product.id ||
+    typeof product.name !== 'string' ||
+    !Number.isFinite(Number(product.price))
+  ) return null;
+
+  const quantity = Number(item.quantity);
+  if (!Number.isFinite(quantity) || quantity < 1) return null;
+
+  return {
+    cartItemId:
+      typeof item.cartItemId === 'string' && item.cartItemId
+        ? item.cartItemId
+        : generateCartItemId(),
+    product: product as Product,
+    quantity: Math.floor(quantity),
+    size: typeof item.size === 'string' ? item.size : undefined,
+    color: typeof item.color === 'string' ? item.color : undefined,
+  };
+}
+
 export function getCart(): CartItem[] {
   if (typeof window === 'undefined') return [];
 
   try {
-    const raw = localStorage.getItem(CART_KEY);
-
+    const raw = window.localStorage.getItem(CART_KEY);
     if (!raw) return [];
 
-    const parsed = JSON.parse(raw);
-
+    const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
 
-    return parsed.map((item) => ({
-      ...item,
-      cartItemId: item.cartItemId || crypto.randomUUID(),
-    }));
+    const normalized = parsed
+      .map(normalizeCartItem)
+      .filter((item): item is CartItem => item !== null);
+
+    // La migration ne doit pas rendre le panier inaccessible si le stockage est plein.
+    if (JSON.stringify(parsed) !== JSON.stringify(normalized)) {
+      try {
+        window.localStorage.setItem(CART_KEY, JSON.stringify(normalized));
+      } catch (storageError) {
+        console.error('Impossible de migrer le panier local :', storageError);
+      }
+    }
+
+    return normalized;
   } catch (error) {
-    console.error('Cart parse error:', error);
+    console.error('Impossible de lire le panier :', error);
     return [];
   }
 }
 
-// 💾 sauvegarder panier
-export function saveCart(cart: CartItem[]): void {
-  if (typeof window === 'undefined') return;
+export function saveCart(cart: CartItem[]): boolean {
+  if (typeof window === 'undefined') return false;
 
-  localStorage.setItem(CART_KEY, JSON.stringify(cart));
-
-  notifyCartUpdate();
+  try {
+    window.localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    notifyCartUpdate();
+    return true;
+  } catch (error) {
+    console.error('Impossible d’enregistrer le panier :', error);
+    return false;
+  }
 }
 
-// ➕ ajouter produit
 export function addToCart(
   product: Product,
-  quantity: number,
+  quantity = 1,
   size?: string,
   color?: string
-): void {
-  const cart = getCart();
+): CartActionResult {
+  if (!product || !product.id) {
+    return { success: false, message: 'Ce produit est invalide.' };
+  }
 
-  const newItem: CartItem = {
+  const requestedQuantity = Math.floor(Number(quantity));
+  if (!Number.isFinite(requestedQuantity) || requestedQuantity < 1) {
+    return { success: false, message: 'La quantité demandée est invalide.' };
+  }
+
+  const availableStock = Math.max(0, Number(product.stock) || 0);
+  if (availableStock === 0) {
+    return { success: false, message: 'Ce produit est en rupture de stock.' };
+  }
+
+  const cart = getCart();
+  const existingIndex = cart.findIndex(
+    (item) =>
+      item.product.id === product.id &&
+      item.size === size &&
+      item.color === color
+  );
+
+  if (existingIndex >= 0) {
+    const existing = cart[existingIndex];
+    const nextQuantity = Math.min(
+      existing.quantity + requestedQuantity,
+      availableStock
+    );
+
+    if (nextQuantity === existing.quantity) {
+      return { success: false, message: 'La quantité maximale disponible est déjà dans le panier.' };
+    }
+
+    cart[existingIndex] = { ...existing, product, quantity: nextQuantity };
+    if (!saveCart(cart)) {
+      return { success: false, message: 'Impossible d’enregistrer le panier sur cet appareil.' };
+    }
+
+    return {
+      success: true,
+      message: nextQuantity < existing.quantity + requestedQuantity
+        ? 'La quantité a été limitée au stock disponible.'
+        : 'Quantité mise à jour dans le panier.',
+    };
+  }
+
+  const finalQuantity = Math.min(requestedQuantity, availableStock);
+  cart.push({
     cartItemId: generateCartItemId(),
     product,
-    quantity,
+    quantity: finalQuantity,
     size,
     color,
+  });
+  if (!saveCart(cart)) {
+    return { success: false, message: 'Impossible d’enregistrer le panier sur cet appareil.' };
+  }
+
+  return {
+    success: true,
+    message: finalQuantity < requestedQuantity
+      ? 'La quantité a été limitée au stock disponible.'
+      : 'Produit ajouté au panier.',
   };
-
-  cart.push(newItem);
-
-  saveCart(cart);
 }
 
-// ✏️ modifier item précis
 export function updateCartItemById(
   cartItemId: string,
   product: Product,
   quantity?: number,
   size?: string,
   color?: string
-): void {
+): boolean {
   const cart = getCart();
+  const index = cart.findIndex((item) => item.cartItemId === cartItemId);
 
-  const updated = cart.map((item) => {
-    if (item.cartItemId !== cartItemId) return item;
+  if (index === -1) return false;
 
-    return {
-      ...item,
-      product,
-      quantity: quantity !== undefined ? quantity : item.quantity,
-      size: size ?? item.size,
-      color: color ?? item.color,
-    };
-  });
+  const currentItem = cart[index];
+  const nextQuantity = quantity === undefined
+    ? currentItem.quantity
+    : Math.floor(Number(quantity));
 
-  saveCart(updated);
-}
+  if (!Number.isFinite(nextQuantity) || nextQuantity < 1) return false;
+  if (nextQuantity > Math.max(0, Number(product.stock) || 0)) return false;
 
-// ❌ supprimer item
-export function removeCartItemById(cartItemId: string): void {
-  const cart = getCart();
-
-  const updated = cart.filter(
-    (item) => item.cartItemId !== cartItemId
+  const nextSize = size ?? currentItem.size;
+  const nextColor = color ?? currentItem.color;
+  const duplicateIndex = cart.findIndex(
+    (item, itemIndex) =>
+      itemIndex !== index &&
+      item.product.id === product.id &&
+      item.size === nextSize &&
+      item.color === nextColor
   );
 
-  saveCart(updated);
+  let finalQuantity = nextQuantity;
+  if (duplicateIndex !== -1) {
+    finalQuantity += cart[duplicateIndex].quantity;
+    if (finalQuantity > Math.max(0, Number(product.stock) || 0)) {
+      return false;
+    }
+  }
+
+  cart[index] = {
+    ...currentItem,
+    product,
+    quantity: finalQuantity,
+    size: nextSize,
+    color: nextColor,
+  };
+
+  if (duplicateIndex !== -1) {
+    cart.splice(duplicateIndex, 1);
+  }
+
+  return saveCart(cart);
 }
 
-// 🔍 récupérer item précis
-export function getCartItemById(
-  cartItemId: string
-): CartItem | undefined {
+export function updateCartQuantity(
+  cartItemId: string,
+  quantity: number
+): CartActionResult {
   const cart = getCart();
+  const index = cart.findIndex((item) => item.cartItemId === cartItemId);
 
-  return cart.find(
-    (item) => item.cartItemId === cartItemId
-  );
+  if (index === -1) {
+    return { success: false, message: 'Cet article n’existe plus dans le panier.' };
+  }
+
+  const nextQuantity = Math.floor(Number(quantity));
+  const stock = Math.max(0, Number(cart[index].product.stock) || 0);
+
+  if (!Number.isFinite(nextQuantity) || nextQuantity < 1) {
+    return { success: false, message: 'La quantité doit être au minimum de 1.' };
+  }
+
+  if (nextQuantity > stock) {
+    return { success: false, message: 'La quantité demandée dépasse le stock disponible.' };
+  }
+
+  cart[index] = { ...cart[index], quantity: nextQuantity };
+  if (!saveCart(cart)) {
+    return { success: false, message: 'Impossible d’enregistrer le panier sur cet appareil.' };
+  }
+
+  return { success: true, message: 'Quantité mise à jour.' };
 }
 
-// 🧹 vider panier
+export function removeCartItemById(cartItemId: string): boolean {
+  const cart = getCart().filter((item) => item.cartItemId !== cartItemId);
+  return saveCart(cart);
+}
+
+export function getCartItemById(cartItemId: string): CartItem | undefined {
+  return getCart().find((item) => item.cartItemId === cartItemId);
+}
+
 export function clearCart(): void {
   if (typeof window === 'undefined') return;
 
-  localStorage.removeItem(CART_KEY);
-
-  notifyCartUpdate();
+  try {
+    window.localStorage.removeItem(CART_KEY);
+    notifyCartUpdate();
+  } catch (error) {
+    console.error('Impossible de vider le panier :', error);
+  }
 }
