@@ -10,29 +10,59 @@ export function useProducts() {
   const [error, setError] = useState<string | null>(null);
   const supabase = useMemo(() => createClient(), []);
 
-  const fetchProducts = useCallback(async () => {
+  const getProducts = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  }, [supabase]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadProducts = async () => {
+      try {
+        const data = await getProducts();
+
+        if (isActive) {
+          setProducts(data);
+          setError(null);
+        }
+      } catch (err) {
+        if (isActive) {
+          setError(err instanceof Error ? err.message : 'Error fetching products');
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadProducts();
+
+    return () => {
+      isActive = false;
+    };
+  }, [getProducts]);
+
+  const refetch = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setProducts(data || []);
+      const data = await getProducts();
+      setProducts(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error fetching products');
     } finally {
       setIsLoading(false);
     }
-  }, [supabase]);
+  }, [getProducts]);
 
-  useEffect(() => {
-    void fetchProducts();
-  }, [fetchProducts]);
-
-  return { products, isLoading, error, refetch: fetchProducts };
+  return { products, isLoading, error, refetch };
 }
