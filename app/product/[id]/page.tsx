@@ -150,7 +150,7 @@ export default function ProductPage({
   // PRODUIT INTROUVABLE
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 via-white to-emerald-50/30">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-red-500 font-semibold">
           Produit non trouvé
         </div>
@@ -259,7 +259,7 @@ Merci !
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-emerald-50/30 py-6 sm:py-10">
+    <div className="min-h-screen bg-white py-6 sm:py-10">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* GRID */}
@@ -420,11 +420,11 @@ Merci !
                           color
                         )
                       }
-                      className={`px-5 py-3 rounded-2xl border text-sm font-medium transition-all duration-300 ${
+                      className={`px-5 py-3 rounded-md border text-sm font-medium transition-colors ${
                         selectedColor ===
                         color
-                          ? 'bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20'
-                          : 'bg-white hover:bg-emerald-50 border-slate-200'
+                          ? 'bg-[#34463d] text-white border-[#34463d]'
+                          : 'bg-white hover:bg-gray-50 border-slate-200'
                       }`}
                     >
                       {color}
@@ -452,7 +452,7 @@ Merci !
                   isSoldOut
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : showAddedMessage
-                    ? 'bg-emerald-600 text-white'
+                    ? 'bg-[#34463d] text-white'
                     : 'bg-[#34463d] hover:bg-[#26372f] text-white'
                 }`}
               >
