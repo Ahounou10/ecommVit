@@ -139,7 +139,7 @@ export default function ProductPage({
   // LOADING
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 via-white to-emerald-50/30">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-slate-500 text-lg animate-pulse-soft">
           Chargement du produit...
         </div>
@@ -260,13 +260,6 @@ Merci !
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-emerald-50/30 py-6 sm:py-10">
-      {/* GLOW BACKGROUND */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-100/30 rounded-full blur-3xl" />
-
-        <div className="absolute bottom-0 left-0 w-[350px] h-[350px] bg-teal-100/20 rounded-full blur-3xl" />
-      </div>
-
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* GRID */}
@@ -281,7 +274,7 @@ Merci !
               onClick={() =>
                 setShowImageModal(true)
               }
-              className="relative w-full aspect-square rounded-3xl overflow-hidden bg-white border border-slate-200/70 shadow-2xl shadow-slate-200/40 hover:scale-[1.01] transition-all duration-500"
+              className="relative w-full aspect-square rounded-lg overflow-hidden bg-white border border-gray-200 shadow-sm hover:scale-[1.01] transition-all duration-500"
             >
               <Image
                 src={currentImage}
@@ -309,8 +302,8 @@ Merci !
                       className={`relative w-20 h-20 rounded-2xl overflow-hidden border-2 flex-shrink-0 transition-all duration-300 ${
                         safeSelectedIndex ===
                         idx
-                          ? 'border-emerald-500 ring-4 ring-emerald-100 scale-105'
-                          : 'border-slate-200 hover:border-emerald-300'
+                          ? 'border-[#34463d] ring-2 ring-[#dce5df]'
+                          : 'border-slate-200 hover:border-gray-500'
                       }`}
                     >
                       <Image
@@ -337,7 +330,7 @@ Merci !
             {/* PRICE */}
             <div className="flex items-center gap-4 mt-5 flex-wrap">
 
-              <p className="text-emerald-600 text-3xl sm:text-4xl font-bold tracking-tight">
+              <p className="text-[#34463d] text-3xl sm:text-4xl font-bold tracking-tight">
                 {formatPrice(price)}
               </p>
 
@@ -398,10 +391,10 @@ Merci !
                     onClick={() =>
                       setSelectedSize(size)
                     }
-                    className={`px-5 py-3 rounded-2xl border text-sm font-medium transition-all duration-300 ${
+                    className={`px-5 py-3 rounded-md border text-sm font-medium transition-colors ${
                       selectedSize === size
-                        ? 'bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20'
-                        : 'bg-white hover:bg-emerald-50 border-slate-200'
+                        ? 'bg-[#34463d] text-white border-[#34463d]'
+                        : 'bg-white hover:bg-gray-50 border-slate-200'
                     }`}
                   >
                     {size}
@@ -455,12 +448,12 @@ Merci !
                 type="button"
                 onClick={handleAddToCart}
                 disabled={isSoldOut}
-                className={`w-full sm:flex-1 px-6 py-4 rounded-2xl font-semibold flex items-center justify-center gap-3 text-sm transition-all duration-300 ${
+                className={`w-full sm:flex-1 px-6 py-4 rounded-md font-semibold flex items-center justify-center gap-3 text-sm transition-colors ${
                   isSoldOut
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : showAddedMessage
                     ? 'bg-emerald-600 text-white'
-                    : 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg shadow-emerald-500/20 hover:-translate-y-1'
+                    : 'bg-[#34463d] hover:bg-[#26372f] text-white'
                 }`}
               >
                 {showAddedMessage ? (
@@ -484,7 +477,7 @@ Merci !
                 type="button"
                 onClick={handleWhatsApp}
                 disabled={isSoldOut}
-                className={`w-full sm:flex-1 px-6 py-4 rounded-2xl font-semibold text-sm transition-all duration-300 ${
+                className={`w-full sm:flex-1 px-6 py-4 rounded-md font-semibold text-sm transition-colors ${
                   isSoldOut
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:-translate-y-1 shadow-sm'
