@@ -24,15 +24,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body className="min-h-screen bg-[#fafaf9] text-gray-950">
+      <body className="min-h-screen bg-[#f7f8fa] text-gray-950">
         <div className="relative z-50">
           <Header />
         </div>
-
-        <main className="min-h-screen">
-          {children}
-        </main>
-
+        <main className="min-h-screen">{children}</main>
         <Footer />
       </body>
     </html>
