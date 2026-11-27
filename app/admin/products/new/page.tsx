@@ -151,10 +151,10 @@ export default function NewProductPage() {
           uploadedUrls.push(data.publicUrl);
         }
 
-        setImagePreviews(newPreviews);
+        setImagePreviews((prev) => [...prev, ...newPreviews]);
         setFormData((prev) => ({
           ...prev,
-          images: uploadedUrls,
+          images: [...prev.images, ...uploadedUrls],
         }));
 
         setSuccess(
@@ -278,8 +278,8 @@ export default function NewProductPage() {
   );
   
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow p-6 md:p-8">
+    <div className="min-h-screen bg-[#fafaf9] py-10 px-4">
+      <div className="max-w-4xl mx-auto bg-white border border-gray-200 p-6 md:p-8">
         <h1 className="text-3xl font-bold mb-2">Ajouter un produit</h1>
         <p className="text-gray-500 mb-8">
           Remplissez les informations du produit
@@ -476,7 +476,7 @@ export default function NewProductPage() {
                   onClick={() => toggleSize(size)}
                   className={`px-4 py-2 rounded-lg border ${
                     formData.sizes.includes(size)
-                      ? 'bg-emerald-600 text-white'
+                      ? 'bg-gray-950 text-white'
                       : 'bg-white'
                   }`}
                 >
@@ -500,7 +500,7 @@ export default function NewProductPage() {
                   onClick={() => toggleColor(color.name)}
                   className={`px-4 py-2 rounded-lg border ${
                     formData.colors.includes(color.name)
-                      ? 'ring-2 ring-emerald-600'
+                      ? 'ring-2 ring-gray-900'
                       : ''
                   }`}
                   style={{
@@ -561,7 +561,7 @@ export default function NewProductPage() {
           <button
             type="submit"
             disabled={isLoading || isUploading}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:bg-gray-400"
+            className="w-full bg-gray-950 hover:bg-gray-700 text-white py-4 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:bg-gray-400"
           >
             {isLoading ? (
               'Publication...'
