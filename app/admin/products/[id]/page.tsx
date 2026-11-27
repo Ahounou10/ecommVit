@@ -296,8 +296,8 @@ export default function ProductPage({
 
   /* UI */
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow">
+    <div className="min-h-screen bg-[#fafaf9] py-10 px-4">
+      <div className="max-w-5xl mx-auto border border-gray-200 bg-white p-6">
 
         <h1 className="text-2xl font-bold mb-6">
           Modifier produit
@@ -476,7 +476,7 @@ export default function ProductPage({
                   onClick={() => toggleSize(s)}
                   className={`px-3 py-1 border rounded ${
                     sizes.includes(s)
-                      ? 'bg-green-500 text-white'
+                      ? 'bg-gray-950 text-white'
                       : ''
                   }`}
                 >
@@ -509,7 +509,7 @@ export default function ProductPage({
           onClick={() => toggleColor(c.name)}
           className={`px-3 py-1 border rounded transition ${
             colors.includes(c.name)
-              ? 'ring-2 ring-green-500'
+              ? 'ring-2 ring-gray-900'
               : ''
           }`}
           style={{ backgroundColor: c.value }}
