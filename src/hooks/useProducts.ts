@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createClient } from '@/supabase/client';
 import type { Product } from '@/types';
 
@@ -8,15 +8,13 @@ export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setIsLoading(true);
+      setError(null);
+
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -30,7 +28,11 @@ export function useProducts() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    void fetchProducts();
+  }, [fetchProducts]);
 
   return { products, isLoading, error, refetch: fetchProducts };
 }
