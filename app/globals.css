@@ -1,11 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafaf9;
-  --foreground: #171717;
-  --brand: #34463d;
-  --brand-hover: #26372f;
-  --border: #e5e5e5;
+  --background: #f7f8fa;
+  --foreground: #202631;
+  --brand: #263b5b;
+  --brand-hover: #1d2f49;
+  --brand-soft: #edf1f6;
+  --border: #e1e5eb;
 }
 
 html {
@@ -39,6 +40,16 @@ select {
     box-shadow 160ms ease;
 }
 
+button {
+  border-radius: 8px;
+}
+
+input,
+textarea,
+select {
+  border-radius: 8px;
+}
+
 input:focus,
 textarea:focus,
 select:focus {
@@ -55,8 +66,8 @@ a:focus-visible {
 }
 
 ::selection {
-  background: #dce5df;
-  color: #17221b;
+  background: #dce4ee;
+  color: #1d2f49;
 }
 
 ::-webkit-scrollbar {
@@ -65,18 +76,56 @@ a:focus-visible {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1ef;
+  background: #f0f2f5;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #a7b1aa;
+  background: #b4becb;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #7c8980;
+  background: #8997a8;
 }
 
 .soft-shadow {
-  box-shadow: 0 4px 16px rgba(23, 23, 23, 0.06);
+  box-shadow: 0 4px 16px rgba(23, 35, 52, 0.06);
+}
+
+/* Palette commune : boutique, panier et administration. */
+.bg-gray-950,
+.bg-gray-900,
+.bg-black {
+  background-color: var(--brand);
+}
+
+.text-gray-950,
+.text-gray-900 {
+  color: #202631;
+}
+
+.text-\[\#34463d\] {
+  color: var(--brand);
+}
+
+.bg-\[\#202823\],
+.bg-\[\#34463d\] {
+  background-color: var(--brand);
+}
+
+.border-\[\#34463d\] {
+  border-color: var(--brand);
+}
+
+.hover\:bg-gray-700:hover,
+.hover\:bg-\[\#26372f\]:hover {
+  background-color: var(--brand-hover);
+}
+
+.hover\:bg-gray-900:hover {
+  background-color: var(--brand-hover);
+}
+
+[class*="inline-flex"][class*="items-center"][class*="justify-center"] {
+  border-radius: 8px;
 }
