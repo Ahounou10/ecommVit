@@ -170,13 +170,13 @@ export default function CartPage() {
                 key={item.cartItemId}
                 className="flex flex-col gap-4 border border-gray-200 bg-white p-4 sm:flex-row sm:items-center"
               >
-                <div className="relative h-36 w-full shrink-0 overflow-hidden bg-gray-100 sm:h-32 sm:w-28">
+                <div className="relative h-40 w-full shrink-0 overflow-hidden bg-gray-50 sm:h-32 sm:w-28">
                   <Image
                     src={imageSrc}
                     alt={product.name}
                     fill
                     sizes="(max-width: 640px) 100vw, 112px"
-                    className="object-cover"
+                    className="object-contain p-2"
                   />
                 </div>
 
