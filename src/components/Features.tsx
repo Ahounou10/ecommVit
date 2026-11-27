@@ -39,7 +39,7 @@ export default function Features() {
         </div>
 
         <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
-          {features.map((feature, idx) => {
+          {features.map((feature) => {
             const Icon = feature.icon;
             return (
               <div key={feature.title} className="text-center group hover:scale-105 transition-transform duration-300 ease-out">
