@@ -252,12 +252,14 @@ export default function ProductPage({
       const pathsToDelete = removedImageUrls
         .map(getProductStoragePath)
         .filter((path): path is string => Boolean(path));
+      let storageCleanupFailed = false;
 
       if (pathsToDelete.length > 0) {
         const { error: storageError } = await supabase.storage
           .from('products')
           .remove(pathsToDelete);
         if (storageError) {
+          storageCleanupFailed = true;
           setErrorMessage('Produit enregistré, mais certaines anciennes images n’ont pas pu être supprimées du stockage.');
         } else {
           setRemovedImageUrls([]);
@@ -271,7 +273,7 @@ export default function ProductPage({
         promo_percent: promo,
       } : prev);
 
-      if (!errorMessage) alert('Produit mis à jour avec succès.');
+      if (!storageCleanupFailed) alert('Produit mis à jour avec succès.');
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Erreur lors de la sauvegarde du produit.');
     } finally {
