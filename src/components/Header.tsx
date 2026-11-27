@@ -35,10 +35,10 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white">
-        <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
+        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-3" aria-label="Accueil Boutique">
-            <span className="flex h-9 w-9 items-center justify-center bg-gray-950 text-sm font-semibold text-white">
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#263b5b] text-sm font-semibold text-white">
               B
             </span>
             <span className="text-lg font-semibold tracking-tight text-gray-950">
@@ -51,7 +51,7 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-gray-600 hover:text-gray-950"
+                className="text-sm font-medium text-gray-600 hover:text-[#263b5b]"
               >
                 {link.label}
               </Link>
@@ -62,11 +62,11 @@ export default function Header() {
             <Link
               href="/cart"
               aria-label={`Panier, ${cartCount} article(s)`}
-              className="relative inline-flex h-10 w-10 items-center justify-center text-gray-800 hover:bg-gray-100"
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-lg text-gray-800 hover:bg-gray-100"
             >
               <ShoppingBag className="h-5 w-5" />
               {cartCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center bg-gray-950 px-1 text-[11px] font-semibold text-white">
+                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#263b5b] px-1 text-[11px] font-semibold text-white">
                   {cartCount > 99 ? '99+' : cartCount}
                 </span>
               )}
@@ -77,7 +77,7 @@ export default function Header() {
               aria-label={isMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
               aria-expanded={isMenuOpen}
               onClick={() => setIsMenuOpen((value) => !value)}
-              className="inline-flex h-10 w-10 items-center justify-center text-gray-800 hover:bg-gray-100 md:hidden"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-gray-800 hover:bg-gray-100 md:hidden"
             >
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -92,7 +92,7 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className="border-b border-gray-100 py-3 text-sm font-medium text-gray-700 last:border-0 hover:text-gray-950"
+                  className="border-b border-gray-100 py-3 text-sm font-medium text-gray-700 last:border-0 hover:text-[#263b5b]"
                 >
                   {link.label}
                 </Link>
