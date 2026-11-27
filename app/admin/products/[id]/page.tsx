@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { createClient } from '@/supabase/client';
 import type { Product } from '@/types';
@@ -45,7 +45,7 @@ export default function ProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -100,7 +100,7 @@ export default function ProductPage({
     };
 
     fetchProduct();
-  }, [id]);
+  }, [id, supabase]);
 
   /* TOGGLES */
   const toggleSize = (size: string) => {
