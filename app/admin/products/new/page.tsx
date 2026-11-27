@@ -178,7 +178,7 @@ export default function NewProductPage() {
         e.target.value = '';
       }
     },
-    [supabase]
+    [imagePreviews.length, supabase]
   );
 
   function toggleSize(size: string) {
