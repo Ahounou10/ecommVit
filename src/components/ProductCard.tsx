@@ -1,176 +1,98 @@
 'use client';
 
 import Image from 'next/image';
-import { ShoppingBag } from 'lucide-react';
-// pas d'état local ici — toasts gérés globalement
-import { formatPrice, getDiscountedPrice } from '@/lib/utils';
-import type { Product } from '@/types';
 import Link from 'next/link';
+import { ShoppingBag } from 'lucide-react';
+import { formatPrice, getDiscountedPrice } from '@/lib/utils';
+import { addToCart } from '@/lib/cart';
+import type { Product } from '@/types';
 
 interface ProductCardProps {
   product: Product;
 }
 
-type CartItem = {
-  product: Product;
-  quantity: number;
-  size: string;
-  color: string;
-};
-
 export default function ProductCard({ product }: ProductCardProps) {
   if (!product) return null;
 
-  // Récupère la première image avec fallback sur image_url
   const productImage = product.images?.[0] || product.image_url;
-
   if (!productImage) return null;
 
-  // valeurs par défaut depuis la boutique
-  const defaultSize = 'M';
-  const defaultColor = 'Noir';
+  const defaultSize = product.sizes?.[0] || 'M';
+  const defaultColor = product.colors?.[0] || 'Noir';
+  const hasStock = Number(product.stock) > 0;
+  const hasDiscount = Number(product.promo_percent) > 0;
 
-  // Remarque: toasts globaux gérés par le composant `Toast` via l'événement `showToast`
+  function handleAddToCart(event: React.MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    event.stopPropagation();
 
-  function addToCart(product: Product) {
-    if (typeof window === 'undefined') return;
-
-    const cart: CartItem[] = JSON.parse(
-      localStorage.getItem('cart') || '[]'
-    );
-
-    // cherche même produit + même taille + même couleur
-    const exists = cart.find(
-      (item) =>
-        item.product.id === product.id &&
-        item.size === defaultSize &&
-        item.color === defaultColor
-    );
-
-    if (exists) {
-      const updated = cart.map((item) =>
-        item.product.id === product.id &&
-        item.size === defaultSize &&
-        item.color === defaultColor
-          ? {
-              ...item,
-              quantity: item.quantity + 1,
-            }
-          : item
-      );
-
-      localStorage.setItem('cart', JSON.stringify(updated));
-    } else {
-      const newItem: CartItem = {
-        product,
-        quantity: 1,
-        size: defaultSize,
-        color: defaultColor,
-      };
-
-      cart.push(newItem);
-      localStorage.setItem('cart', JSON.stringify(cart));
-    }
+    const result = addToCart(product, 1, defaultSize, defaultColor);
 
     window.dispatchEvent(
       new CustomEvent('showToast', {
         detail: {
-          message: 'Produit ajouté au panier',
-          type: 'success',
+          message: result.message,
+          type: result.success ? 'success' : 'error',
           duration: 2500,
         },
       })
     );
-
-    window.dispatchEvent(new Event('cartUpdated'));
   }
 
-  const discountedPrice = getDiscountedPrice(
+  const displayedPrice = getDiscountedPrice(
     product.price,
     product.promo_percent
   );
 
-  const discount = product.promo_percent > 0;
-
   return (
-    <>
-      <Link href={`/product/${product.id}`} className="h-full">
-        <div className="group h-full flex flex-col bg-gradient-to-br from-white to-amber-50 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1 border border-amber-100">
+    <article className="group h-full overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow duration-200 hover:shadow-md">
+      <Link href={`/product/${product.id}`} className="block">
+        <div className="relative aspect-[4/5] overflow-hidden bg-gray-100">
+          <Image
+            src={productImage}
+            alt={product.name}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          />
 
-          {/* IMAGE */}
-          <div className="relative h-44 sm:h-48 md:h-52 bg-gray-200 overflow-hidden flex-shrink-0">
-            <Image
-              src={productImage}
-              alt={product.name}
-              fill
-              className="object-cover group-hover:scale-110 transition-transform duration-500"
-            />
+          {hasDiscount && (
+            <span className="absolute left-3 top-3 bg-red-600 px-2.5 py-1 text-xs font-semibold text-white">
+              -{product.promo_percent}%
+            </span>
+          )}
+        </div>
 
-            {discount && (
-              <div className="absolute top-3 right-3 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full shadow-md font-semibold text-sm">
-                -{product.promo_percent}%
-              </div>
-            )}
+        <div className="p-3 sm:p-4">
+          <h3 className="line-clamp-2 min-h-10 text-sm font-medium text-gray-900 sm:text-base">
+            {product.name}
+          </h3>
 
-            {/* DESKTOP */}
-            <div className="hidden sm:flex absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-end justify-end p-4">
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  addToCart(product);
-                }}
-                className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white p-2 rounded-full shadow-lg transform hover:scale-110 transition-all duration-200"
-              >
-                <ShoppingBag className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* MOBILE */}
-            <div className="sm:hidden absolute bottom-2 right-2">
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  addToCart(product);
-                }}
-                className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-2 rounded-full shadow-lg transform active:scale-95 transition-all duration-200"
-              >
-                <ShoppingBag className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-
-          {/* INFO */}
-          <div className="p-4 flex flex-col flex-1">
-
-            {/* NOM PRODUIT */}
-            <h3 className="font-semibold text-gray-900 text-sm sm:text-base line-clamp-2 min-h-[40px] sm:min-h-[48px] group-hover:text-emerald-600 transition-colors">
-              {product.name}
-            </h3>
-
-            {/* PRIX */}
-            <div className="mt-auto pt-3 flex items-center gap-2 flex-wrap">
-
-              {/* Nouveau prix */}
-              <span className="text-emerald-600 font-bold text-base sm:text-lg">
-                {formatPrice(
-                  discount
-                    ? discountedPrice
-                    : product.price
-                )}
+          <div className="mt-2 flex flex-wrap items-baseline gap-2">
+            <span className="font-semibold text-gray-950">
+              {formatPrice(hasDiscount ? displayedPrice : product.price)}
+            </span>
+            {hasDiscount && (
+              <span className="text-sm text-gray-500 line-through">
+                {formatPrice(product.price)}
               </span>
-
-              {/* Ancien prix */}
-              {discount && (
-                <span className="text-sm text-gray-400 line-through">
-                  {formatPrice(product.price)}
-                </span>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </Link>
 
-      {/* Utilise le toast global (composant Toast monté dans Header) */}
-    </>
+      <div className="px-3 pb-3 sm:px-4 sm:pb-4">
+        <button
+          type="button"
+          onClick={handleAddToCart}
+          disabled={!hasStock}
+          aria-label={hasStock ? `Ajouter ${product.name} au panier` : 'Produit indisponible'}
+          className="flex w-full items-center justify-center gap-2 border border-gray-900 px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-900 hover:text-white disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-100 disabled:text-gray-500"
+        >
+          <ShoppingBag className="h-4 w-4" />
+          {hasStock ? 'Ajouter au panier' : 'Indisponible'}
+        </button>
+      </div>
+    </article>
   );
 }
