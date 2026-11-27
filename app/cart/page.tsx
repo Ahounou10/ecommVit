@@ -130,7 +130,9 @@ export default function CartPage() {
       setCartError('');
       setAvailability(nextAvailability);
       setCart(refreshedItems);
-      saveCart(refreshedItems);
+      if (!saveCart(refreshedItems)) {
+        setCartError('Les informations ont été actualisées à l’écran, mais leur sauvegarde locale a échoué.');
+      }
     };
 
     void validateCartProducts();
@@ -259,7 +261,9 @@ export default function CartPage() {
               product.promo_percent
             );
             const imageSrc =
-              product.images?.[0] || product.image_url || '/placeholder.png';
+              status === 'removed'
+                ? '/placeholder.png'
+                : product.images?.[0] || product.image_url || '/placeholder.png';
             const stock = Math.max(0, Number(product.stock) || 0);
             const status = availability[item.cartItemId] ?? 'checking';
             const isAvailable = status === 'available';
