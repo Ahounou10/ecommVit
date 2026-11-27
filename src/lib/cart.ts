@@ -80,7 +80,7 @@ export function getCart(): CartItem[] {
 }
 
 export function saveCart(cart: CartItem[]): boolean {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined') return false;
 
   try {
     window.localStorage.setItem(CART_KEY, JSON.stringify(cart));
