@@ -36,7 +36,14 @@ function normalizeCartItem(value: unknown): CartItem | null {
   const item = value as Partial<CartItem>;
   const product = item.product;
 
-  if (!product || typeof product !== 'object' || !product.id) return null;
+  if (
+    !product ||
+    typeof product !== 'object' ||
+    typeof product.id !== 'string' ||
+    !product.id ||
+    typeof product.name !== 'string' ||
+    !Number.isFinite(Number(product.price))
+  ) return null;
 
   const quantity = Number(item.quantity);
   if (!Number.isFinite(quantity) || quantity < 1) return null;
@@ -184,13 +191,35 @@ export function updateCartItemById(
   if (!Number.isFinite(nextQuantity) || nextQuantity < 1) return false;
   if (nextQuantity > Math.max(0, Number(product.stock) || 0)) return false;
 
+  const nextSize = size ?? currentItem.size;
+  const nextColor = color ?? currentItem.color;
+  const duplicateIndex = cart.findIndex(
+    (item, itemIndex) =>
+      itemIndex !== index &&
+      item.product.id === product.id &&
+      item.size === nextSize &&
+      item.color === nextColor
+  );
+
+  let finalQuantity = nextQuantity;
+  if (duplicateIndex !== -1) {
+    finalQuantity += cart[duplicateIndex].quantity;
+    if (finalQuantity > Math.max(0, Number(product.stock) || 0)) {
+      return false;
+    }
+  }
+
   cart[index] = {
     ...currentItem,
     product,
-    quantity: nextQuantity,
-    size: size ?? currentItem.size,
-    color: color ?? currentItem.color,
+    quantity: finalQuantity,
+    size: nextSize,
+    color: nextColor,
   };
+
+  if (duplicateIndex !== -1) {
+    cart.splice(duplicateIndex, 1);
+  }
 
   return saveCart(cart);
 }
