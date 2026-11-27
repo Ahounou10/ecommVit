@@ -21,12 +21,7 @@ import {
   getWhatsAppLink,
 } from '@/lib/utils';
 
-import {
-  addToCart,
-  updateCartItemById,
-} from '@/lib/cart';
-
-import { dispatchCartUpdate } from '@/hooks/useCartSync';
+import { addToCart, updateCartItemById } from '@/lib/cart';
 
 import type { Product } from '@/types';
 
@@ -66,6 +61,8 @@ export default function ProductPage({
   const [showAddedMessage, setShowAddedMessage] =
     useState(false);
 
+  const [cartActionError, setCartActionError] = useState('');
+
   const [showImageModal, setShowImageModal] =
     useState(false);
 
@@ -94,6 +91,12 @@ export default function ProductPage({
         }
 
         setProduct(data);
+        setSelectedSize((current) =>
+          data.sizes?.includes(current) ? current : data.sizes?.[0] || ''
+        );
+        setSelectedColor((current) =>
+          data.colors?.includes(current) ? current : data.colors?.[0] || ''
+        );
       } catch (err) {
         console.error(
           'Erreur produit:',
@@ -193,34 +196,48 @@ export default function ProductPage({
 
   // AJOUT PANIER
   const handleAddToCart = () => {
+    setCartActionError('');
+
+    if (!selectedSize || !product.sizes?.includes(selectedSize)) {
+      setCartActionError('Veuillez choisir une taille disponible.');
+      return;
+    }
+
+    if (!selectedColor || !product.colors?.includes(selectedColor)) {
+      setCartActionError('Veuillez choisir une couleur disponible.');
+      return;
+    }
+
     if (isEditingFromCart && cartItemId) {
-      updateCartItemById(
+      const updated = updateCartItemById(
         cartItemId,
         product,
-        1,
+        undefined,
         selectedSize,
         selectedColor
       );
 
-      dispatchCartUpdate();
+      if (!updated) {
+        setCartActionError('Cet article ne peut plus être modifié. Vérifiez le panier et le stock disponible.');
+        return;
+      }
     } else {
-      addToCart(
-        product,
-        1,
-        selectedSize,
-        selectedColor
-      );
+      const result = addToCart(product, 1, selectedSize, selectedColor);
+      if (!result.success) {
+        setCartActionError(result.message);
+        return;
+      }
+      if (result.message !== 'Produit ajouté au panier.') {
+        setCartActionError(result.message);
+      }
     }
 
     setShowAddedMessage(true);
 
     setTimeout(() => {
       setShowAddedMessage(false);
-
-      if (isEditingFromCart) {
-        router.push('/cart');
-      }
-    }, 1500);
+      if (isEditingFromCart) router.push('/cart');
+    }, 1200);
   };
 
   // WHATSAPP
@@ -424,8 +441,14 @@ Merci !
               </div>
             </div>
 
+            {cartActionError && (
+              <p role="alert" className="mt-5 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {cartActionError}
+              </p>
+            )}
+
             {/* ACTIONS */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-10">
+            <div className="flex flex-col sm:flex-row gap-4 mt-6">
 
               {/* ADD TO CART */}
               <button
