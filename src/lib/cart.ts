@@ -79,15 +79,16 @@ export function getCart(): CartItem[] {
   }
 }
 
-export function saveCart(cart: CartItem[]): void {
+export function saveCart(cart: CartItem[]): boolean {
   if (typeof window === 'undefined') return;
 
   try {
     window.localStorage.setItem(CART_KEY, JSON.stringify(cart));
     notifyCartUpdate();
+    return true;
   } catch (error) {
     console.error('Impossible d’enregistrer le panier :', error);
-    throw new Error('Le panier ne peut pas être enregistré sur cet appareil.');
+    return false;
   }
 }
 
@@ -131,7 +132,9 @@ export function addToCart(
     }
 
     cart[existingIndex] = { ...existing, product, quantity: nextQuantity };
-    saveCart(cart);
+    if (!saveCart(cart)) {
+      return { success: false, message: 'Impossible d’enregistrer le panier sur cet appareil.' };
+    }
 
     return {
       success: true,
@@ -149,7 +152,9 @@ export function addToCart(
     size,
     color,
   });
-  saveCart(cart);
+  if (!saveCart(cart)) {
+    return { success: false, message: 'Impossible d’enregistrer le panier sur cet appareil.' };
+  }
 
   return {
     success: true,
@@ -187,8 +192,7 @@ export function updateCartItemById(
     color: color ?? currentItem.color,
   };
 
-  saveCart(cart);
-  return true;
+  return saveCart(cart);
 }
 
 export function updateCartQuantity(
@@ -214,14 +218,16 @@ export function updateCartQuantity(
   }
 
   cart[index] = { ...cart[index], quantity: nextQuantity };
-  saveCart(cart);
+  if (!saveCart(cart)) {
+    return { success: false, message: 'Impossible d’enregistrer le panier sur cet appareil.' };
+  }
 
   return { success: true, message: 'Quantité mise à jour.' };
 }
 
-export function removeCartItemById(cartItemId: string): void {
+export function removeCartItemById(cartItemId: string): boolean {
   const cart = getCart().filter((item) => item.cartItemId !== cartItemId);
-  saveCart(cart);
+  return saveCart(cart);
 }
 
 export function getCartItemById(cartItemId: string): CartItem | undefined {
@@ -231,6 +237,10 @@ export function getCartItemById(cartItemId: string): CartItem | undefined {
 export function clearCart(): void {
   if (typeof window === 'undefined') return;
 
-  window.localStorage.removeItem(CART_KEY);
-  notifyCartUpdate();
+  try {
+    window.localStorage.removeItem(CART_KEY);
+    notifyCartUpdate();
+  } catch (error) {
+    console.error('Impossible de vider le panier :', error);
+  }
 }
