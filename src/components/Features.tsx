@@ -1,53 +1,49 @@
-'use client';
-
-import { Zap, Truck, Shield, Clock } from 'lucide-react';
+import { Clock, ShieldCheck, ShoppingBag, Truck } from 'lucide-react';
 
 export default function Features() {
   const features = [
     {
-      icon: Zap,
-      title: 'Ultra rapide',
-      description: 'Navigation fluide et instantanée sur tous vos appareils',
+      icon: ShoppingBag,
+      title: 'Commande simple',
+      description: 'Choisissez vos articles et transmettez votre commande directement.',
     },
     {
       icon: Truck,
-      title: 'Commande facile',
-      description: 'Commandez via WhatsApp en quelques clics',
+      title: 'Livraison organisée',
+      description: 'Les modalités de livraison sont confirmées avec vous.',
     },
     {
-      icon: Shield,
-      title: 'Sécurisé',
-      description: 'Paiement sûr et confidentiel de vos données',
+      icon: ShieldCheck,
+      title: 'Échanges transparents',
+      description: 'Les informations utiles sont communiquées avant la validation.',
     },
     {
       icon: Clock,
-      title: 'Service 24/7',
-      description: 'Nous sommes toujours là pour vous répondre',
+      title: 'Un contact direct',
+      description: 'Notre équipe reste disponible pour répondre à vos questions.',
     },
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Pourquoi nous choisir ?
-          </h2>
-          <p className="text-lg text-gray-600">
-            Une boutique pensée pour votre confort
+    <section className="bg-[#f5f5f3] py-16 md:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-10 max-w-xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
+            Nos engagements
           </p>
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-gray-950">
+            Une expérience sans complication
+          </h2>
         </div>
 
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
           {features.map((feature) => {
             const Icon = feature.icon;
             return (
-              <div key={feature.title} className="text-center group hover:scale-105 transition-transform duration-300 ease-out">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
-                  <Icon className="w-8 h-8" />
-                </div>
-                <h3 className="font-bold text-gray-900 mb-2 transition-colors duration-300">{feature.title}</h3>
-                <p className="text-gray-600 text-sm transition-colors duration-300">{feature.description}</p>
+              <div key={feature.title} className="border-t border-gray-300 pt-5">
+                <Icon className="h-5 w-5 text-[#34463d]" aria-hidden="true" />
+                <h3 className="mt-4 font-semibold text-gray-950">{feature.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-gray-600">{feature.description}</p>
               </div>
             );
           })}
