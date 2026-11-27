@@ -45,7 +45,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   );
 
   return (
-    <article className="group h-full overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow duration-200 hover:shadow-md">
+    <article className="group h-full overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
       <Link href={`/product/${product.id}`} className="block">
         <div className="relative aspect-[4/5] overflow-hidden bg-gray-100">
           <Image
@@ -57,7 +57,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           />
 
           {hasDiscount && (
-            <span className="absolute left-3 top-3 bg-red-600 px-2.5 py-1 text-xs font-semibold text-white">
+            <span className="absolute left-3 top-3 rounded-md bg-red-600 px-2.5 py-1 text-xs font-semibold text-white">
               -{product.promo_percent}%
             </span>
           )}
@@ -87,7 +87,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           onClick={handleAddToCart}
           disabled={!hasStock}
           aria-label={hasStock ? `Ajouter ${product.name} au panier` : 'Produit indisponible'}
-          className="flex w-full items-center justify-center gap-2 border border-gray-900 px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-900 hover:text-white disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-100 disabled:text-gray-500"
+          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#263b5b] px-3 py-2.5 text-sm font-medium text-white hover:bg-[#1d2f49] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
         >
           <ShoppingBag className="h-4 w-4" />
           {hasStock ? 'Ajouter au panier' : 'Indisponible'}
