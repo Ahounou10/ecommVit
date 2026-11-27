@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ShoppingBag, Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Toast from '@/components/Toast';
-import { getCart } from '@/lib/cart';
+import { CART_UPDATE_EVENT, getCart } from '@/lib/cart';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,9 +17,9 @@ export default function Header() {
     };
 
     updateCart();
-    window.addEventListener('cartUpdated', updateCart);
+    window.addEventListener(CART_UPDATE_EVENT, updateCart);
 
-    return () => window.removeEventListener('cartUpdated', updateCart);
+    return () => window.removeEventListener(CART_UPDATE_EVENT, updateCart);
   }, []);
 
   const navLinks = [
