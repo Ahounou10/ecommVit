@@ -1,4 +1,5 @@
-import { Mail, MapPin, Phone, MessageSquare } from 'lucide-react';
+import Link from 'next/link';
+import { MapPin, MessageSquare, Phone } from 'lucide-react';
 import {
   BRAND_PHONE,
   BRAND_WHATSAPP,
@@ -9,164 +10,77 @@ import {
 } from '@/lib/constants';
 
 export default function ContactPage() {
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
+  const whatsappUrl = `https://wa.me/${BRAND_WHATSAPP.replace(/\D/g, '')}`;
 
-      {/* HERO */}
-      <div className="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-600 text-white py-14 sm:py-20 md:py-28">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-4xl font-bold mb-4">
-            Contactez-nous
+  return (
+    <main className="min-h-screen bg-white">
+      <section className="bg-[#202823] py-16 text-white sm:py-20">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-300">
+            Nous contacter
+          </p>
+          <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
+            Parlons de votre commande
           </h1>
-          <p className="text-emerald-50 text-base sm:text-lg md:text-xl">
-            Une question ? Une commande ? On répond rapidement 
+          <p className="mt-5 max-w-2xl text-base leading-7 text-gray-300">
+            Une question sur un article, une taille ou une livraison ? Retrouvez nos coordonnées et contactez-nous directement.
           </p>
         </div>
-      </div>
+      </section>
 
-      {/* CONTENT */}
-      <div className="py-12 sm:py-16 md:py-24">
-        <div className="max-w-6xl mx-auto px-4 grid lg:grid-cols-2 gap-10">
-
-          {/* LEFT - CONTACT INFOS */}
-          <div className="space-y-8">
-
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              Nos coordonnées
-            </h2>
-
-            {/* CARD */}
-            <div className="space-y-5">
-
-              {/* PHONE */}
-              <div className="flex items-start gap-4 p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                <div className="w-11 h-11 flex items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
-                  <Phone className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">Téléphone</p>
-                  <a
-                    href={`tel:${BRAND_PHONE}`}
-                    className="text-emerald-600 font-medium hover:underline"
-                  >
-                    {BRAND_PHONE}
-                  </a>
-                </div>
+      <section className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 sm:py-16 lg:grid-cols-[1fr_0.8fr]">
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-950">Nos coordonnées</h2>
+          <div className="mt-6 divide-y divide-gray-200 border-y border-gray-200">
+            <div className="flex gap-4 py-5">
+              <Phone className="mt-1 h-5 w-5 shrink-0 text-gray-600" />
+              <div>
+                <h3 className="font-medium text-gray-950">Téléphone</h3>
+                <a href={`tel:${BRAND_PHONE}`} className="mt-1 block text-sm text-gray-600 hover:text-gray-950">
+                  {BRAND_PHONE}
+                </a>
               </div>
-
-              {/* WHATSAPP */}
-              <div className="flex items-start gap-4 p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                <div className="w-11 h-11 flex items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
-                  <MessageSquare className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">WhatsApp</p>
-                  <a
-                    href={`https://wa.me/${BRAND_WHATSAPP.replace(/\D/g, '')}`}
-                    target="_blank"
-                    className="text-emerald-600 font-medium hover:underline"
-                  >
-                    Nous écrire directement
-                  </a>
-                </div>
+            </div>
+            <div className="flex gap-4 py-5">
+              <MapPin className="mt-1 h-5 w-5 shrink-0 text-gray-600" />
+              <div>
+                <h3 className="font-medium text-gray-950">Adresse</h3>
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  {BRAND_ADDRESS}<br />{BRAND_CITY}
+                </p>
               </div>
-
-              {/* ADDRESS */}
-              <div className="flex items-start gap-4 p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <div className="w-11 h-11 flex items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
-                  <MapPin className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">Adresse</p>
-                  <p className="text-gray-600 text-sm">
-                    {BRAND_ADDRESS}
-                    <br />
-                    {BRAND_CITY}
-                  </p>
-                </div>
-              </div>
-
-              {/* SOCIAL */}
-              <div className="flex items-start gap-4 p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <div className="w-11 h-11 flex items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">Réseaux sociaux</p>
-
-                  <div className="flex gap-4 mt-2 text-sm">
-                    <a
-                      href={`https://instagram.com/${BRAND_INSTAGRAM.replace('@', '')}`}
-                      target="_blank"
-                      className="text-emerald-600 hover:underline"
-                    >
-                      Instagram
-                    </a>
-
-                    <a
-                      href={`https://facebook.com/${BRAND_FACEBOOK}`}
-                      target="_blank"
-                      className="text-emerald-600 hover:underline"
-                    >
-                      Facebook
-                    </a>
-                  </div>
+            </div>
+            <div className="flex gap-4 py-5">
+              <MessageSquare className="mt-1 h-5 w-5 shrink-0 text-gray-600" />
+              <div>
+                <h3 className="font-medium text-gray-950">Réseaux sociaux</h3>
+                <div className="mt-2 flex flex-wrap gap-4 text-sm">
+                  <a href={`https://instagram.com/${BRAND_INSTAGRAM.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 underline underline-offset-4 hover:text-gray-950">Instagram</a>
+                  <a href={`https://facebook.com/${BRAND_FACEBOOK}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 underline underline-offset-4 hover:text-gray-950">Facebook</a>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* RIGHT - FORM */}
-          <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 sm:p-8">
-
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Envoyer un message
-            </h2>
-
-            <form className="space-y-5">
-
-              <input
-                type="text"
-                placeholder="Votre nom"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none"
-              />
-
-              <input
-                type="email"
-                placeholder="Votre email"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none"
-              />
-
-              <textarea
-                rows={5}
-                placeholder="Votre message..."
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none"
-              />
-
-              <button
-                type="submit"
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl transition active:scale-95"
-              >
-                Envoyer le message
-              </button>
-
-            </form>
-          </div>
         </div>
-      </div>
 
-      {/* MAP */}
-      <div className="py-16 bg-slate-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center mb-8 text-gray-900">
-            Nous trouver
-          </h2>
-
-          <div className="h-80 md:h-96 rounded-2xl bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-600 shadow-inner">
-            Carte à intégrer
-          </div>
-        </div>
-      </div>
-    </div>
+        <aside className="h-fit border border-gray-200 bg-[#fafaf9] p-6 sm:p-8">
+          <h2 className="text-xl font-semibold text-gray-950">Écrivez-nous sur WhatsApp</h2>
+          <p className="mt-3 text-sm leading-6 text-gray-600">
+            Pour obtenir une réponse au sujet d’un produit ou d’une commande, envoyez-nous directement un message.
+          </p>
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex min-h-12 w-full items-center justify-center bg-gray-950 px-5 text-sm font-semibold text-white hover:bg-gray-700"
+          >
+            Contacter la boutique
+          </a>
+          <Link href="/boutique" className="mt-3 inline-flex min-h-12 w-full items-center justify-center border border-gray-300 bg-white px-5 text-sm font-medium text-gray-900 hover:bg-gray-100">
+            Retour à la boutique
+          </Link>
+        </aside>
+      </section>
+    </main>
   );
 }
