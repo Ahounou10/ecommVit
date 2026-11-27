@@ -14,9 +14,3 @@ export function useCartSync(onCartUpdate: () => void) {
     };
   }, [onCartUpdate]);
 }
-
-export function dispatchCartUpdate() {
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new Event(CART_UPDATE_EVENT));
-  }
-}
