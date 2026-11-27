@@ -494,7 +494,7 @@ Merci !
       {showImageModal && (
         <div
           onClick={() => setShowImageModal(false)}
-          className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md"
+          className="fixed inset-0 z-[9999] bg-black/80"
           role="dialog"
           aria-modal="true"
           aria-label="Image agrandie"
@@ -503,7 +503,7 @@ Merci !
           <button
             type="button"
             onClick={() => setShowImageModal(false)}
-            className="absolute top-4 right-4 z-10 bg-white/90 backdrop-blur-md rounded-full p-3 hover:bg-white active:scale-95 transition-all duration-200 shadow-xl"
+            className="absolute top-4 right-4 z-10 bg-white rounded-md p-3 hover:bg-white active:scale-95 transition-all duration-200 shadow-xl"
             aria-label="Fermer"
           >
             <X className="w-5 h-5 text-slate-800" />
