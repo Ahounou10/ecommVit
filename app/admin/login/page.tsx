@@ -76,11 +76,11 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-950 to-emerald-950">
+    <div className="min-h-screen flex items-center justify-center bg-[#202823]">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-lg shadow-xl p-8">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-emerald-600 rounded-lg text-white font-bold text-xl mb-4">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-950 rounded-lg text-white font-bold text-xl mb-4">
               B
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Admin</h1>
@@ -104,7 +104,7 @@ export default function AdminLoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-700"
                 placeholder="admin@boutique.ci"
                 required
               />
@@ -127,7 +127,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gray-950 hover:bg-gray-700 text-white font-bold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Connexion...' : 'Se connecter'}
             </button>
