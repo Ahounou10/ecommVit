@@ -31,6 +31,15 @@ const CATEGORIES = {
   mixte: 'Mixte',
 };
 
+const ADMIN_USER_ID = '68f37f7e-f4c0-406e-8e05-1cec82f261f0';
+
+function getProductStoragePath(publicUrl: string): string | null {
+  const marker = '/storage/v1/object/public/products/';
+  const markerIndex = publicUrl.indexOf(marker);
+  if (markerIndex === -1) return null;
+  return decodeURIComponent(publicUrl.slice(markerIndex + marker.length).split('?')[0]);
+}
+
 const SUBCATEGORIES = {
   tshirts: 'T-Shirts',
   jeans: 'Jeans',
@@ -50,6 +59,9 @@ export default function ProductPage({
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [removedImageUrls, setRemovedImageUrls] = useState<string[]>([]);
 
   /* FORM */
   const [name, setName] = useState('');
@@ -124,63 +136,147 @@ export default function ProductPage({
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = e.target.files;
-    if (!files) return;
+    if (!files?.length) return;
 
-    const uploaded: string[] = [];
+    setErrorMessage('');
+    setIsUploading(true);
+    const uploadedPaths: string[] = [];
 
-    for (const file of Array.from(files)) {
-      const fileName = `${Date.now()}-${file.name}`;
-
-      const { error } = await supabase.storage
-        .from('products')
-        .upload(fileName, file);
-
-      if (!error) {
-        const { data } = supabase.storage
-          .from('products')
-          .getPublicUrl(fileName);
-
-        uploaded.push(data.publicUrl);
+    try {
+      if (images.length + files.length > 8) {
+        throw new Error('Un produit peut contenir au maximum 8 images.');
       }
-    }
 
-    setImages((prev) => [...prev, ...uploaded]);
+      for (const file of Array.from(files)) {
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+          throw new Error('Format non autorisé. Utilisez JPG, PNG ou WEBP.');
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          throw new Error('Chaque image doit peser 5 Mo maximum.');
+        }
+      }
+
+      const uploadedUrls: string[] = [];
+      for (const file of Array.from(files)) {
+        const extension = file.type === 'image/jpeg' ? 'jpg' : file.type.split('/')[1];
+        const fileName = `${crypto.randomUUID()}.${extension}`;
+        const { error } = await supabase.storage
+          .from('products')
+          .upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+        if (error) throw error;
+        uploadedPaths.push(fileName);
+
+        const { data } = supabase.storage.from('products').getPublicUrl(fileName);
+        uploadedUrls.push(data.publicUrl);
+      }
+
+      setImages((prev) => [...prev, ...uploadedUrls]);
+    } catch (error) {
+      if (uploadedPaths.length > 0) {
+        await supabase.storage.from('products').remove(uploadedPaths);
+      }
+      setErrorMessage(error instanceof Error ? error.message : 'Échec du téléchargement des images.');
+    } finally {
+      setIsUploading(false);
+      e.target.value = '';
+    }
   };
 
   const removeImage = (index: number) => {
+    const imageToRemove = images[index];
+    if (imageToRemove) {
+      setRemovedImageUrls((prev) => [...prev, imageToRemove]);
+    }
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   /* SAVE */
   const handleSave = async () => {
-    setIsSaving(true);
+    setErrorMessage('');
 
-    const { error } = await supabase
-      .from('products')
-      .update({
-        name,
-        description,
-        price,
-        stock,
-        images,
-        image_url: images[0] || null,
-        category,
-        subcategory,
-        sizes,
-        colors,
-        promo_percent: promo,
-      })
-      .eq('id', id);
-
-    setIsSaving(false);
-
-    if (error) {
-      console.error(error);
-      alert('Erreur sauvegarde');
+    if (!name.trim()) {
+      setErrorMessage('Le nom du produit est obligatoire.');
+      return;
+    }
+    if (!Number.isInteger(price) || price <= 0) {
+      setErrorMessage('Le prix doit être un nombre entier supérieur à 0.');
+      return;
+    }
+    if (!Number.isInteger(stock) || stock < 0) {
+      setErrorMessage('Le stock doit être un nombre entier positif ou nul.');
+      return;
+    }
+    if (!Number.isInteger(promo) || promo < 0 || promo > 100) {
+      setErrorMessage('La promotion doit être comprise entre 0 et 100 %.');
+      return;
+    }
+    if (images.length === 0) {
+      setErrorMessage('Ajoutez au moins une image au produit.');
+      return;
+    }
+    if (sizes.length === 0 || colors.length === 0) {
+      setErrorMessage('Sélectionnez au moins une taille et une couleur.');
       return;
     }
 
-    alert('Produit mis à jour avec succès');
+    setIsSaving(true);
+
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || user?.id !== ADMIN_USER_ID) {
+        throw new Error('Seul le compte administrateur autorisé peut modifier un produit.');
+      }
+
+      const { error } = await supabase
+        .from('products')
+        .update({
+          name: name.trim(),
+          description: description.trim(),
+          price,
+          stock,
+          images,
+          image_url: images[0],
+          category,
+          subcategory,
+          sizes,
+          colors,
+          promo_percent: promo,
+        })
+        .eq('id', id)
+        .select('id')
+        .single();
+
+      if (error) throw error;
+
+      const pathsToDelete = removedImageUrls
+        .map(getProductStoragePath)
+        .filter((path): path is string => Boolean(path));
+
+      if (pathsToDelete.length > 0) {
+        const { error: storageError } = await supabase.storage
+          .from('products')
+          .remove(pathsToDelete);
+        if (storageError) {
+          setErrorMessage('Produit enregistré, mais certaines anciennes images n’ont pas pu être supprimées du stockage.');
+        } else {
+          setRemovedImageUrls([]);
+        }
+      }
+
+      setProduct((prev) => prev ? {
+        ...prev,
+        name: name.trim(), description: description.trim(), price, stock,
+        images, image_url: images[0], category, subcategory, sizes, colors,
+        promo_percent: promo,
+      } : prev);
+
+      if (!errorMessage) alert('Produit mis à jour avec succès.');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Erreur lors de la sauvegarde du produit.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   /* LOADING */
@@ -211,7 +307,16 @@ export default function ProductPage({
             Images du produit
           </label>
 
-          <input type="file" multiple onChange={handleUploadImages} />
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            disabled={isUploading || isSaving}
+            onChange={handleUploadImages}
+          />
+          <p className="mt-1 text-xs text-gray-500">JPG, PNG ou WEBP · 5 Mo maximum par image · 8 images maximum.</p>
+          {isUploading && <p className="mt-2 text-sm text-gray-600">Téléchargement des images…</p>}
+          {errorMessage && <p role="alert" className="mt-3 border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{errorMessage}</p>}
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
             {images.map((img, i) => (
@@ -270,6 +375,8 @@ export default function ProductPage({
               </label>
               <input
                 type="number"
+                min="1"
+                step="1"
                 value={price}
                 onChange={(e) =>
                   setPrice(Number(e.target.value))
@@ -284,6 +391,8 @@ export default function ProductPage({
               </label>
               <input
                 type="number"
+                min="0"
+                step="1"
                 value={stock}
                 onChange={(e) =>
                   setStock(Number(e.target.value))
@@ -341,6 +450,9 @@ export default function ProductPage({
             </label>
             <input
               type="number"
+              min="0"
+              max="100"
+              step="1"
               value={promo}
               onChange={(e) =>
                 setPromo(Number(e.target.value))
@@ -412,8 +524,8 @@ export default function ProductPage({
           {/* SAVE */}
           <button
             onClick={handleSave}
-            disabled={isSaving}
-            className="w-full bg-green-600 text-white py-3 rounded"
+            disabled={isSaving || isUploading}
+            className="w-full bg-gray-900 text-white py-3 rounded disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSaving ? 'Sauvegarde...' : 'Enregistrer'}
           </button>
