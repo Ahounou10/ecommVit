@@ -62,7 +62,6 @@ export default function CartPage() {
 
   useEffect(() => {
     if (!isHydrated || !cartProductIds) {
-      setAvailability({});
       return;
     }
 
