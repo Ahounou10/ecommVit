@@ -111,7 +111,7 @@ export default function NewProductPage() {
       try {
         const uploadedUrls: string[] = [];
 
-        if (files.length > 8) {
+        if (imagePreviews.length + files.length > 8) {
           throw new Error('Vous pouvez ajouter au maximum 8 images à la fois.');
         }
 
@@ -168,6 +168,7 @@ export default function NewProductPage() {
         setError(getErrorMessage(err));
       } finally {
         setIsUploading(false);
+        e.target.value = '';
       }
     },
     [supabase]
