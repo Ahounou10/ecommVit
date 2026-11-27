@@ -110,9 +110,9 @@ export default function BoutiqueClient({
           ">
             <div className="
               md:border md:border-gray-200
-              md:rounded-2xl
+              md:rounded-lg
               md:p-4
-              md:shadow-lg
+              md:shadow-sm
               md:bg-white
             ">
               <FilterPanel onFilterChange={setFilters} />
