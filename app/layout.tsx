@@ -25,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body className="bg-sky-50 text-slate-900 min-h-screen relative isolate">
+      <body className="min-h-screen bg-[#fafaf9] text-gray-950">
 
         <CartProvider>
 
