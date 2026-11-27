@@ -6,7 +6,7 @@ export interface Product {
   image_url?: string;
   images?: string[];
   category: 'homme' | 'femme' | 'mixte';
-  subcategory: 'tshirts' | 'jeans' | 'robes' | 'chaussures';
+  subcategory: 'tshirts' | 'jeans' | 'robes' | 'chaussures' | 'sneakers';
   sizes: string[];
   colors: string[];
   stock: number;
