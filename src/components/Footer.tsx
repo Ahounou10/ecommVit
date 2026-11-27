@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { MapPin, Phone } from 'lucide-react';
 import { BRAND_PHONE, BRAND_WHATSAPP, BRAND_INSTAGRAM, BRAND_FACEBOOK, BRAND_ADDRESS, BRAND_CITY } from '@/lib/constants';
 
 export default function Footer() {
